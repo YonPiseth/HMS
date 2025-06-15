@@ -52,49 +52,37 @@ namespace HMS
             // Title
             Label lblTitle = new Label();
             lblTitle.Text = "Medicines";
-            lblTitle.Font = new System.Drawing.Font("Segoe UI", 18, System.Drawing.FontStyle.Bold);
-            lblTitle.ForeColor = System.Drawing.Color.FromArgb(24, 33, 54);
-            lblTitle.Dock = DockStyle.Fill;
-            lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            UIHelper.StyleLabelTitle(lblTitle); // Apply title label styling
 
             // Search
             Panel searchPanel = new Panel();
+            UIHelper.ApplyPanelStyles(searchPanel); // Apply panel styling
             searchPanel.Dock = DockStyle.Fill;
             searchPanel.Height = 40;
-            searchPanel.Padding = new Padding(0, 8, 0, 8);
             this.txtSearch.Dock = DockStyle.Left;
             this.txtSearch.Width = 320;
-            this.txtSearch.Font = new System.Drawing.Font("Segoe UI", 11);
-            this.txtSearch.BorderStyle = BorderStyle.FixedSingle;
+            UIHelper.StyleTextBox(this.txtSearch); // Apply text box styling
             searchPanel.Controls.Add(this.txtSearch);
 
             // DataGridView
             this.dataGridView1.Dock = DockStyle.Fill;
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.MultiSelect = false;
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            UIHelper.StyleDataGridView(this.dataGridView1); // Apply DataGridView styling
 
             // Button panel
+            UIHelper.ApplyPanelStyles(this.buttonPanel); // Apply panel styling
             this.buttonPanel.Dock = DockStyle.Fill;
             this.buttonPanel.Height = 48;
             this.buttonPanel.Padding = new Padding(0, 8, 0, 0);
+
+            // Style and add buttons to buttonPanel
             this.btnAdd.Text = "Add Medicine";
             this.btnDelete.Text = "Delete";
             this.btnUpdate.Text = "Update";
             this.btnLogout.Text = "Log Out";
             foreach (Button btn in new[] { btnAdd, btnDelete, btnUpdate, btnLogout })
             {
-                btn.FlatStyle = FlatStyle.Flat;
-                btn.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
-                btn.ForeColor = System.Drawing.Color.White;
-                btn.Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Bold);
-                btn.Height = 36;
-                btn.Width = 120;
-                btn.Margin = new Padding(10, 0, 0, 0);
-                btn.FlatAppearance.BorderSize = 0;
+                UIHelper.StyleButton(btn); // Apply button styling
+                btn.Width = 120; // Specific width for this control
                 this.buttonPanel.Controls.Add(btn);
             }
             this.btnAdd.Click += new EventHandler(this.btnAdd_Click);

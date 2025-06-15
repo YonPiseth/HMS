@@ -28,25 +28,50 @@ GO
 USE HMS;
 GO
 
--- Drop stored procedure if it exists
+-- Drop stored procedures if they exist
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_CreatePatientUser')
     DROP PROCEDURE sp_CreatePatientUser;
 GO
 
--- Drop tables if they exist (in reverse dependency order)
-IF OBJECT_ID('tblMedicineUsage', 'U') IS NOT NULL DROP TABLE tblMedicineUsage;
-IF OBJECT_ID('tblMedicineStock', 'U') IS NOT NULL DROP TABLE tblMedicineStock;
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_ScheduleAppointment')
+    DROP PROCEDURE sp_ScheduleAppointment;
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_AllocateRoom')
+    DROP PROCEDURE sp_AllocateRoom;
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_GenerateInvoice')
+    DROP PROCEDURE sp_GenerateInvoice;
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_UpdateMedicineStock')
+    DROP PROCEDURE sp_UpdateMedicineStock;
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_CreatePatientVisit')
+    DROP PROCEDURE sp_CreatePatientVisit;
+GO
+
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_ScheduleRoomMaintenance')
+    DROP PROCEDURE sp_ScheduleRoomMaintenance;
+GO
+
+-- Drop tables if they exist (in reverse dependency order to avoid foreign key issues)
+IF OBJECT_ID('tblBillingLineItem', 'U') IS NOT NULL DROP TABLE tblBillingLineItem;
+IF OBJECT_ID('tblPayment', 'U') IS NOT NULL DROP TABLE tblPayment;
 IF OBJECT_ID('tblPrescriptionDetail', 'U') IS NOT NULL DROP TABLE tblPrescriptionDetail;
 IF OBJECT_ID('tblPrescription', 'U') IS NOT NULL DROP TABLE tblPrescription;
-IF OBJECT_ID('tblPatientDocument', 'U') IS NOT NULL DROP TABLE tblPatientDocument;
-IF OBJECT_ID('tblPatientVisit', 'U') IS NOT NULL DROP TABLE tblPatientVisit;
+IF OBJECT_ID('tblMedicineUsage', 'U') IS NOT NULL DROP TABLE tblMedicineUsage;
+IF OBJECT_ID('tblMedicineStock', 'U') IS NOT NULL DROP TABLE tblMedicineStock;
+IF OBJECT_ID('tblRoomAllocation', 'U') IS NOT NULL DROP TABLE tblRoomAllocation;
 IF OBJECT_ID('tblRoomMaintenance', 'U') IS NOT NULL DROP TABLE tblRoomMaintenance;
 IF OBJECT_ID('tblDoctorSchedule', 'U') IS NOT NULL DROP TABLE tblDoctorSchedule;
-IF OBJECT_ID('tblPayment', 'U') IS NOT NULL DROP TABLE tblPayment;
-IF OBJECT_ID('tblInvoice', 'U') IS NOT NULL DROP TABLE tblInvoice;
-IF OBJECT_ID('tblBilling', 'U') IS NOT NULL DROP TABLE tblBilling;
+IF OBJECT_ID('tblPatientDocument', 'U') IS NOT NULL DROP TABLE tblPatientDocument;
+IF OBJECT_ID('tblPatientVisit', 'U') IS NOT NULL DROP TABLE tblPatientVisit;
 IF OBJECT_ID('tblAppointment', 'U') IS NOT NULL DROP TABLE tblAppointment;
-IF OBJECT_ID('tblRoomAllocation', 'U') IS NOT NULL DROP TABLE tblRoomAllocation;
+IF OBJECT_ID('tblBilling', 'U') IS NOT NULL DROP TABLE tblBilling;
+IF OBJECT_ID('tblInvoice', 'U') IS NOT NULL DROP TABLE tblInvoice; -- Drop Invoice before Billing due to FK in Billing
 IF OBJECT_ID('tblRoom', 'U') IS NOT NULL DROP TABLE tblRoom;
 IF OBJECT_ID('tblPatientDisease', 'U') IS NOT NULL DROP TABLE tblPatientDisease;
 IF OBJECT_ID('tblDisease', 'U') IS NOT NULL DROP TABLE tblDisease;
@@ -115,11 +140,11 @@ CREATE TABLE tblPatient (
     Email NVARCHAR(100),
     Address NVARCHAR(200),
     InsuranceNumber NVARCHAR(50),
-    [Patient's Family] NVARCHAR(200),
+    PatientFamily NVARCHAR(200),
     Status NVARCHAR(20) DEFAULT 'Active',
     ProfilePhoto VARBINARY(MAX),
     LastVisitDate DATE,
-    UserID INT,
+    UserID INT, -- Kept as per your original schema
     IsDeleted BIT DEFAULT 0,
     FOREIGN KEY (UserID) REFERENCES tblUser(UserID)
 );
@@ -215,61 +240,80 @@ CREATE TABLE tblPatientDisease (
 );
 GO
 
+-- Create tblInvoice (MODIFIED: Created before tblBilling, Simplified Schema)
+CREATE TABLE tblInvoice (
+    InvoiceID INT PRIMARY KEY IDENTITY(1,1),
+    PatientID INT NOT NULL,
+    InvoiceDate DATETIME DEFAULT GETDATE(),
+    DueDate DATETIME,
+    TotalAmount DECIMAL(18, 2) NOT NULL,
+    PaymentStatus NVARCHAR(50) NOT NULL, -- e.g., 'Pending', 'Paid', 'Partially Paid'
+    Notes NVARCHAR(MAX),
+    CreatedBy INT, -- Assuming UserID
+    CreatedDate DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (PatientID) REFERENCES tblPatient(PatientID),
+    FOREIGN KEY (CreatedBy) REFERENCES tblUser(UserID)
+);
+GO
+
 -- Create tblBilling
 CREATE TABLE tblBilling (
-    BillingID INT IDENTITY(1,1) PRIMARY KEY,
+    BillingID INT PRIMARY KEY IDENTITY(1,1),
     PatientID INT NOT NULL,
-    InvoiceNumber NVARCHAR(50) NOT NULL UNIQUE,
-    InvoiceDate DATE DEFAULT GETDATE(),
-    ConsultationFee DECIMAL(10,2),
-    RoomCharges DECIMAL(10,2),
-    MedicineCharges DECIMAL(10,2),
-    OtherCharges DECIMAL(10,2),
-    TotalAmount DECIMAL(10,2),
-    PaymentStatus NVARCHAR(20) DEFAULT 'Pending',
-    Discount DECIMAL(10,2),
-    TaxAmount DECIMAL(10,2),
-    PaymentMethod NVARCHAR(50),
-    PaymentDate DATE,
-    DueDate DATE,
-    Notes NVARCHAR(500),
+    InvoiceID INT, -- Nullable to allow bills to be created before an invoice
+    BillingDate DATETIME DEFAULT GETDATE(),
+    SubTotal DECIMAL(18,2) NOT NULL,
+    DiscountPercentage DECIMAL(5,2) DEFAULT 0,
+    TaxPercentage DECIMAL(5,2) DEFAULT 0,
+    GrandTotal DECIMAL(18,2) NOT NULL,
     IsDeleted BIT DEFAULT 0,
-    FOREIGN KEY (PatientID) REFERENCES tblPatient(PatientID)
-);
-GO
-
--- Create tblInvoice
-CREATE TABLE tblInvoice (
-    InvoiceID INT IDENTITY(1,1) PRIMARY KEY,
-    BillingID INT NOT NULL,
-    PatientID INT NOT NULL,
-    InvoiceNumber NVARCHAR(50) NOT NULL UNIQUE,
-    InvoiceDate DATE DEFAULT GETDATE(),
-    TotalAmount DECIMAL(10,2),
-    PaymentMethod NVARCHAR(50),
-    PaymentDate DATE,
-    PaymentStatus NVARCHAR(20) DEFAULT 'Pending',
-    Notes NVARCHAR(500),
-    DueDate DATE,
-    GeneratedBy INT,
-    IsDeleted BIT DEFAULT 0,
-    FOREIGN KEY (BillingID) REFERENCES tblBilling(BillingID),
+    CreatedDate DATETIME DEFAULT GETDATE(),
+    LastModifiedDate DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (PatientID) REFERENCES tblPatient(PatientID),
-    FOREIGN KEY (GeneratedBy) REFERENCES tblUser(UserID)
+    FOREIGN KEY (InvoiceID) REFERENCES tblInvoice(InvoiceID) -- FK to tblInvoice
 );
 GO
 
--- Create tblPayment
+-- Create tblBillingLineItem
+CREATE TABLE tblBillingLineItem (
+    LineItemID INT PRIMARY KEY IDENTITY(1,1),
+    BillingID INT NOT NULL,
+    Description NVARCHAR(255) NOT NULL,
+    Quantity DECIMAL(10,2) NOT NULL,
+    UnitPrice DECIMAL(10,2) NOT NULL,
+    LineTotal DECIMAL(18,2) NOT NULL,
+    FOREIGN KEY (BillingID) REFERENCES tblBilling(BillingID)
+);
+GO
+
+-- Create tblInvoiceLineItem
+CREATE TABLE tblInvoiceLineItem (
+    LineItemID INT PRIMARY KEY IDENTITY(1,1),
+    InvoiceID INT NOT NULL,
+    Description NVARCHAR(255) NOT NULL,
+    Quantity DECIMAL(10,2) NOT NULL,
+    UnitPrice DECIMAL(10,2) NOT NULL,
+    LineTotal DECIMAL(18,2) NOT NULL,
+    BillingID INT NULL, -- Can be linked to the original billing item
+    FOREIGN KEY (InvoiceID) REFERENCES tblInvoice(InvoiceID),
+    FOREIGN KEY (BillingID) REFERENCES tblBilling(BillingID)
+);
+GO
+
+-- Create tblPayment (Modified to link to InvoiceID or BillingID)
 CREATE TABLE tblPayment (
     PaymentID INT IDENTITY(1,1) PRIMARY KEY,
-    InvoiceID INT NOT NULL,
+    BillingID INT NULL, -- Can be linked to a specific bill
+    InvoiceID INT NULL, -- Can be linked to an invoice
     Amount DECIMAL(10,2) NOT NULL,
     PaymentDate DATETIME DEFAULT GETDATE(),
     PaymentMethod NVARCHAR(50) NOT NULL,
     TransactionID NVARCHAR(100),
     Status NVARCHAR(20) DEFAULT 'Completed',
     Notes NVARCHAR(200),
-    FOREIGN KEY (InvoiceID) REFERENCES tblInvoice(InvoiceID)
+    FOREIGN KEY (BillingID) REFERENCES tblBilling(BillingID),
+    FOREIGN KEY (InvoiceID) REFERENCES tblInvoice(InvoiceID),
+    CONSTRAINT CHK_Payment_Link CHECK (BillingID IS NOT NULL OR InvoiceID IS NOT NULL)
 );
 GO
 
@@ -575,38 +619,39 @@ BEGIN
 END;
 GO
 
-CREATE PROCEDURE sp_GenerateInvoice
-    @PatientID INT,
-    @ConsultationFee DECIMAL(10,2),
-    @RoomCharges DECIMAL(10,2),
-    @MedicineCharges DECIMAL(10,2),
-    @OtherCharges DECIMAL(10,2)
-AS
-BEGIN
-    BEGIN TRY
-        BEGIN TRANSACTION;
+-- sp_GenerateInvoice (Functionality now handled by C# application)
+-- CREATE PROCEDURE sp_GenerateInvoice
+--     @PatientID INT,
+--     @ConsultationFee DECIMAL(10,2),
+--     @RoomCharges DECIMAL(10,2),
+--     @MedicineCharges DECIMAL(10,2),
+--     @OtherCharges DECIMAL(10,2)
+-- AS
+-- BEGIN
+--     BEGIN TRY
+--         BEGIN TRANSACTION;
         
-        DECLARE @InvoiceNumber NVARCHAR(50) = 'INV-' + CAST(YEAR(GETDATE()) AS VARCHAR) + '-' + CAST(NEXT VALUE FOR dbo.InvoiceNumberSequence AS VARCHAR);
-        DECLARE @TotalAmount DECIMAL(10,2) = @ConsultationFee + @RoomCharges + @MedicineCharges + @OtherCharges;
+--         DECLARE @InvoiceNumber NVARCHAR(50) = 'INV-' + CAST(YEAR(GETDATE()) AS VARCHAR) + '-' + CAST(NEXT VALUE FOR dbo.InvoiceNumberSequence AS VARCHAR);
+--         DECLARE @TotalAmount DECIMAL(10,2) = @ConsultationFee + @RoomCharges + @MedicineCharges + @OtherCharges;
         
-        -- Create billing record
-        INSERT INTO tblBilling (PatientID, InvoiceNumber, ConsultationFee, RoomCharges, MedicineCharges, OtherCharges, TotalAmount)
-        VALUES (@PatientID, @InvoiceNumber, @ConsultationFee, @RoomCharges, @MedicineCharges, @OtherCharges, @TotalAmount);
+--         -- Create billing record
+--         INSERT INTO tblBilling (PatientID, InvoiceNumber, ConsultationFee, RoomCharges, MedicineCharges, OtherCharges, TotalAmount)
+--         VALUES (@PatientID, @InvoiceNumber, @ConsultationFee, @RoomCharges, @MedicineCharges, @OtherCharges, @TotalAmount);
         
-        DECLARE @BillingID INT = SCOPE_IDENTITY();
+--         DECLARE @BillingID INT = SCOPE_IDENTITY();
         
-        -- Create invoice record
-        INSERT INTO tblInvoice (BillingID, PatientID, InvoiceNumber, DueDate)
-        VALUES (@BillingID, @PatientID, @InvoiceNumber, DATEADD(DAY, 30, GETDATE()));
+--         -- Create invoice record
+--         INSERT INTO tblInvoice (BillingID, PatientID, InvoiceNumber, DueDate)
+--         VALUES (@BillingID, @PatientID, @InvoiceNumber, DATEADD(DAY, 30, GETDATE()));
         
-        COMMIT TRANSACTION;
-    END TRY
-    BEGIN CATCH
-        ROLLBACK TRANSACTION;
-        THROW;
-    END CATCH
-END;
-GO
+--         COMMIT TRANSACTION;
+--     END TRY
+--     BEGIN CATCH
+--         ROLLBACK TRANSACTION;
+--         THROW;
+--     END CATCH
+-- END;
+-- GO
 
 CREATE PROCEDURE sp_UpdateMedicineStock
     @MedicineID INT,

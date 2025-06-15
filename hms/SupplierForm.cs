@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace HMS
 {
@@ -30,88 +31,101 @@ namespace HMS
 
             // Form settings
             this.Text = "Supplier Information";
-            this.Size = new System.Drawing.Size(400, 400);
+            this.Size = new System.Drawing.Size(450, 480); // Adjusted size
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.BackColor = Color.White; // Set form background color
+
+            // Main layout panel
+            TableLayoutPanel mainLayout = new TableLayoutPanel();
+            mainLayout.Dock = DockStyle.Fill;
+            mainLayout.ColumnCount = 2;
+            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F));
+            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65F));
+            mainLayout.RowCount = 6; // Number of rows for controls + buttons
+            for (int i = 0; i < 5; i++) // Set height for control rows
+            {
+                mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));
+            }
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50)); // Buttons row
+            mainLayout.Padding = new Padding(15);
+            mainLayout.AutoScroll = true;
 
             // Supplier Name
-            Label lblSupplierName = new Label();
-            lblSupplierName.Text = "Supplier Name:";
-            lblSupplierName.Location = new System.Drawing.Point(20, 20);
-            lblSupplierName.Size = new System.Drawing.Size(120, 20);
-
-            this.txtSupplierName.Location = new System.Drawing.Point(150, 20);
-            this.txtSupplierName.Size = new System.Drawing.Size(200, 27);
+            Label lblSupplierName = new Label { Text = "Supplier Name:" };
+            UIHelper.StyleLabel(lblSupplierName);
+            this.txtSupplierName.Dock = DockStyle.Fill;
+            UIHelper.StyleTextBox(this.txtSupplierName);
 
             // Contact Person
-            Label lblContactPerson = new Label();
-            lblContactPerson.Text = "Contact Person:";
-            lblContactPerson.Location = new System.Drawing.Point(20, 60);
-            lblContactPerson.Size = new System.Drawing.Size(120, 20);
-
-            this.txtContactPerson.Location = new System.Drawing.Point(150, 60);
-            this.txtContactPerson.Size = new System.Drawing.Size(200, 27);
+            Label lblContactPerson = new Label { Text = "Contact Person:" };
+            UIHelper.StyleLabel(lblContactPerson);
+            this.txtContactPerson.Dock = DockStyle.Fill;
+            UIHelper.StyleTextBox(this.txtContactPerson);
 
             // Email
-            Label lblEmail = new Label();
-            lblEmail.Text = "Email:";
-            lblEmail.Location = new System.Drawing.Point(20, 100);
-            lblEmail.Size = new System.Drawing.Size(120, 20);
-
-            this.txtEmail.Location = new System.Drawing.Point(150, 100);
-            this.txtEmail.Size = new System.Drawing.Size(200, 27);
+            Label lblEmail = new Label { Text = "Email:" };
+            UIHelper.StyleLabel(lblEmail);
+            this.txtEmail.Dock = DockStyle.Fill;
+            UIHelper.StyleTextBox(this.txtEmail);
 
             // Phone
-            Label lblPhone = new Label();
-            lblPhone.Text = "Phone:";
-            lblPhone.Location = new System.Drawing.Point(20, 140);
-            lblPhone.Size = new System.Drawing.Size(120, 20);
-
-            this.txtPhone.Location = new System.Drawing.Point(150, 140);
-            this.txtPhone.Size = new System.Drawing.Size(200, 27);
+            Label lblPhone = new Label { Text = "Phone:" };
+            UIHelper.StyleLabel(lblPhone);
+            this.txtPhone.Dock = DockStyle.Fill;
+            UIHelper.StyleTextBox(this.txtPhone);
 
             // Address
-            Label lblAddress = new Label();
-            lblAddress.Text = "Address:";
-            lblAddress.Location = new System.Drawing.Point(20, 180);
-            lblAddress.Size = new System.Drawing.Size(120, 20);
-
-            this.txtAddress.Location = new System.Drawing.Point(150, 180);
-            this.txtAddress.Size = new System.Drawing.Size(200, 60);
+            Label lblAddress = new Label { Text = "Address:" };
+            UIHelper.StyleLabel(lblAddress);
+            this.txtAddress.Dock = DockStyle.Fill;
+            UIHelper.StyleTextBox(this.txtAddress);
             this.txtAddress.Multiline = true;
+            this.txtAddress.Height = 60; // Allow multiple lines
+            mainLayout.RowStyles[4] = new RowStyle(SizeType.Absolute, 70); // Adjust row height for multiline textbox
 
-            // Save Button
+            // Buttons Panel
+            FlowLayoutPanel buttonPanel = new FlowLayoutPanel();
+            buttonPanel.Dock = DockStyle.Fill;
+            buttonPanel.FlowDirection = FlowDirection.RightToLeft;
+            buttonPanel.Padding = new Padding(0, 5, 0, 0);
+
             this.btnSave.Text = "Save";
-            this.btnSave.Location = new System.Drawing.Point(150, 280);
-            this.btnSave.Size = new System.Drawing.Size(90, 35);
-            this.btnSave.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
-            this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.FlatStyle = FlatStyle.Flat;
+            UIHelper.StyleButton(this.btnSave); // Apply button styling
+            this.btnSave.Width = 100; // Adjusted width for form buttons
             this.btnSave.Click += new EventHandler(this.btnSave_Click);
 
-            // Cancel Button
             this.btnCancel.Text = "Cancel";
-            this.btnCancel.Location = new System.Drawing.Point(260, 280);
-            this.btnCancel.Size = new System.Drawing.Size(90, 35);
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(220, 220, 220);
-            this.btnCancel.FlatStyle = FlatStyle.Flat;
+            UIHelper.StyleButton(this.btnCancel); // Apply button styling
+            this.btnCancel.Width = 100; // Adjusted width for form buttons
             this.btnCancel.Click += new EventHandler(this.btnCancel_Click);
 
-            // Add controls
-            this.Controls.Add(lblSupplierName);
-            this.Controls.Add(this.txtSupplierName);
-            this.Controls.Add(lblContactPerson);
-            this.Controls.Add(this.txtContactPerson);
-            this.Controls.Add(lblEmail);
-            this.Controls.Add(this.txtEmail);
-            this.Controls.Add(lblPhone);
-            this.Controls.Add(this.txtPhone);
-            this.Controls.Add(lblAddress);
-            this.Controls.Add(this.txtAddress);
-            this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.btnCancel);
+            buttonPanel.Controls.Add(this.btnCancel);
+            buttonPanel.Controls.Add(this.btnSave);
+
+            // Add controls to main layout
+            mainLayout.Controls.Add(lblSupplierName, 0, 0);
+            mainLayout.Controls.Add(this.txtSupplierName, 1, 0);
+
+            mainLayout.Controls.Add(lblContactPerson, 0, 1);
+            mainLayout.Controls.Add(this.txtContactPerson, 1, 1);
+
+            mainLayout.Controls.Add(lblEmail, 0, 2);
+            mainLayout.Controls.Add(this.txtEmail, 1, 2);
+
+            mainLayout.Controls.Add(lblPhone, 0, 3);
+            mainLayout.Controls.Add(this.txtPhone, 1, 3);
+
+            mainLayout.Controls.Add(lblAddress, 0, 4);
+            mainLayout.Controls.Add(this.txtAddress, 1, 4);
+            mainLayout.SetRowSpan(this.txtAddress, 2); // Span 2 rows for multiline textbox
+
+            mainLayout.Controls.Add(buttonPanel, 0, 5); // Buttons at the bottom
+            mainLayout.SetColumnSpan(buttonPanel, 2);
+
+            this.Controls.Add(mainLayout);
         }
 
         private void btnSave_Click(object sender, EventArgs e)

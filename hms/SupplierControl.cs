@@ -20,7 +20,6 @@ namespace HMS
         {
             InitializeComponent();
             LoadSuppliers();
-            StyleGridAndButtons();
             this.txtSearch.TextChanged += new EventHandler(this.txtSearch_TextChanged);
             this.dataGridView1.DataBindingComplete += (s, e) => {
                 if (this.dataGridView1.Columns.Contains("IsDeleted"))
@@ -53,49 +52,37 @@ namespace HMS
             // Title
             Label lblTitle = new Label();
             lblTitle.Text = "Suppliers";
-            lblTitle.Font = new System.Drawing.Font("Segoe UI", 18, System.Drawing.FontStyle.Bold);
-            lblTitle.ForeColor = System.Drawing.Color.FromArgb(24, 33, 54);
-            lblTitle.Dock = DockStyle.Fill;
-            lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            UIHelper.StyleLabelTitle(lblTitle);
 
             // Search
             Panel searchPanel = new Panel();
+            UIHelper.ApplyPanelStyles(searchPanel);
             searchPanel.Dock = DockStyle.Fill;
             searchPanel.Height = 40;
-            searchPanel.Padding = new Padding(0, 8, 0, 8);
             this.txtSearch.Dock = DockStyle.Left;
             this.txtSearch.Width = 320;
-            this.txtSearch.Font = new System.Drawing.Font("Segoe UI", 11);
-            this.txtSearch.BorderStyle = BorderStyle.FixedSingle;
+            UIHelper.StyleTextBox(this.txtSearch);
             searchPanel.Controls.Add(this.txtSearch);
 
             // DataGridView
             this.dataGridView1.Dock = DockStyle.Fill;
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.MultiSelect = false;
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            UIHelper.StyleDataGridView(this.dataGridView1);
 
             // Button panel
+            UIHelper.ApplyPanelStyles(this.buttonPanel);
             this.buttonPanel.Dock = DockStyle.Fill;
             this.buttonPanel.Height = 48;
             this.buttonPanel.Padding = new Padding(0, 8, 0, 0);
+
+            // Style and add buttons to buttonPanel
             this.btnAdd.Text = "Add Supplier";
             this.btnDelete.Text = "Delete";
             this.btnUpdate.Text = "Update";
             this.btnLogout.Text = "Log Out";
             foreach (Button btn in new[] { btnAdd, btnDelete, btnUpdate, btnLogout })
             {
-                btn.FlatStyle = FlatStyle.Flat;
-                btn.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
-                btn.ForeColor = System.Drawing.Color.White;
-                btn.Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Bold);
-                btn.Height = 36;
+                UIHelper.StyleButton(btn);
                 btn.Width = 120;
-                btn.Margin = new Padding(10, 0, 0, 0);
-                btn.FlatAppearance.BorderSize = 0;
                 this.buttonPanel.Controls.Add(btn);
             }
             this.btnAdd.Click += new EventHandler(this.btnAdd_Click);
@@ -112,21 +99,6 @@ namespace HMS
             this.Controls.Clear();
             this.Controls.Add(layout);
             this.Size = new System.Drawing.Size(900, 500);
-        }
-
-        private void StyleGridAndButtons()
-        {
-            dataGridView1.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Bold);
-            dataGridView1.DefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 10);
-            dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.AliceBlue;
-            foreach (Button btn in new[] { btnAdd, btnDelete, btnUpdate, btnLogout })
-            {
-                btn.FlatStyle = FlatStyle.Flat;
-                btn.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
-                btn.ForeColor = System.Drawing.Color.White;
-                btn.Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Bold);
-                btn.Height = 36;
-            }
         }
 
         private void LoadSuppliers(string search = "")

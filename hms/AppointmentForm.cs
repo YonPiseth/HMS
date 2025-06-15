@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using System.Drawing; // Added for Color and Padding
 
 namespace HMS
 {
@@ -37,98 +38,102 @@ namespace HMS
 
             // Form settings
             this.Text = "Appointment Information";
-            this.Size = new System.Drawing.Size(400, 400);
+            this.Size = new Size(450, 500); // Adjusted size for better field visibility
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.BackColor = Color.White;
 
-            // Labels and Controls
-            int labelX = 20;
-            int controlX = 150;
-            int startY = 20;
-            int spacing = 40;
+            // Main layout panel
+            TableLayoutPanel mainLayout = new TableLayoutPanel();
+            mainLayout.Dock = DockStyle.Fill;
+            mainLayout.ColumnCount = 2;
+            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F));
+            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65F));
+            mainLayout.RowCount = 7; // 6 fields + Buttons
+            // Adjust row heights for better spacing
+            for (int i = 0; i < 6; i++) 
+            {
+                mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40)); // Standard field rows
+            }
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50)); // Buttons row
+            mainLayout.Padding = new Padding(20); // More generous padding
+            mainLayout.AutoScroll = true;
+            UIHelper.ApplyPanelStyles(mainLayout); // Apply panel style to main layout
+
+            // Helper to add a row of label and control
+            Action<string, Control, int> addRow = (labelText, control, row) =>
+            {
+                Label lbl = new Label { Text = labelText, AutoSize = true, TextAlign = ContentAlignment.MiddleLeft, Anchor = AnchorStyles.Left };
+                UIHelper.StyleLabel(lbl);
+                mainLayout.Controls.Add(lbl, 0, row);
+                control.Dock = DockStyle.Fill;
+                mainLayout.Controls.Add(control, 1, row);
+            };
 
             // Patient
-            Label lblPatient = new Label();
-            lblPatient.Text = "Patient:";
-            lblPatient.Location = new System.Drawing.Point(labelX, startY);
-            lblPatient.AutoSize = true;
-            this.cmbPatient.Location = new System.Drawing.Point(controlX, startY);
-            this.cmbPatient.Size = new System.Drawing.Size(200, 23);
+            addRow("Patient:", cmbPatient, 0);
+            UIHelper.StyleComboBox(this.cmbPatient);
             this.cmbPatient.DropDownStyle = ComboBoxStyle.DropDownList;
             this.cmbPatient.DisplayMember = "FullName";
             this.cmbPatient.ValueMember = "PatientID";
 
             // Doctor
-            Label lblDoctor = new Label();
-            lblDoctor.Text = "Doctor:";
-            lblDoctor.Location = new System.Drawing.Point(labelX, startY + spacing);
-            lblDoctor.AutoSize = true;
-            this.cmbDoctor.Location = new System.Drawing.Point(controlX, startY + spacing);
-            this.cmbDoctor.Size = new System.Drawing.Size(200, 23);
+            addRow("Doctor:", cmbDoctor, 1);
+            UIHelper.StyleComboBox(this.cmbDoctor);
             this.cmbDoctor.DropDownStyle = ComboBoxStyle.DropDownList;
             this.cmbDoctor.DisplayMember = "FullName";
             this.cmbDoctor.ValueMember = "DoctorID";
 
             // Date
-            Label lblDate = new Label();
-            lblDate.Text = "Date:";
-            lblDate.Location = new System.Drawing.Point(labelX, startY + spacing * 2);
-            lblDate.AutoSize = true;
-            this.dtpDate.Location = new System.Drawing.Point(controlX, startY + spacing * 2);
-            this.dtpDate.Size = new System.Drawing.Size(200, 23);
+            addRow("Date:", dtpDate, 2);
             this.dtpDate.Format = DateTimePickerFormat.Short;
+            this.dtpDate.Font = new Font("Segoe UI", 10); // Manual style for DateTimePicker
 
             // Time
-            Label lblTime = new Label();
-            lblTime.Text = "Time:";
-            lblTime.Location = new System.Drawing.Point(labelX, startY + spacing * 3);
-            lblTime.AutoSize = true;
-            this.dtpTime.Location = new System.Drawing.Point(controlX, startY + spacing * 3);
-            this.dtpTime.Size = new System.Drawing.Size(200, 23);
+            addRow("Time:", dtpTime, 3);
             this.dtpTime.Format = DateTimePickerFormat.Time;
             this.dtpTime.ShowUpDown = true;
+            this.dtpTime.Font = new Font("Segoe UI", 10); // Manual style for DateTimePicker
 
             // Reason
-            Label lblReason = new Label();
-            lblReason.Text = "Reason:";
-            lblReason.Location = new System.Drawing.Point(labelX, startY + spacing * 4);
-            lblReason.AutoSize = true;
-            this.txtReason.Location = new System.Drawing.Point(controlX, startY + spacing * 4);
-            this.txtReason.Size = new System.Drawing.Size(200, 23);
+            addRow("Reason:", txtReason, 4);
+            UIHelper.StyleTextBox(this.txtReason);
+            this.txtReason.Multiline = true; // Allow multiline for reason
+            this.txtReason.Height = 80; // Larger height for multiline
+            mainLayout.SetRowSpan(this.txtReason, 2); // Span two rows for reason
+            mainLayout.RowStyles[4] = new RowStyle(SizeType.Absolute, 80); // Adjust height for reason row
 
             // Status
-            Label lblStatus = new Label();
-            lblStatus.Text = "Status:";
-            lblStatus.Location = new System.Drawing.Point(labelX, startY + spacing * 5);
-            lblStatus.AutoSize = true;
-            this.cmbStatus.Location = new System.Drawing.Point(controlX, startY + spacing * 5);
-            this.cmbStatus.Size = new System.Drawing.Size(200, 23);
+            addRow("Status:", cmbStatus, 5); // This row index will be affected by previous row span
+            UIHelper.StyleComboBox(this.cmbStatus);
             this.cmbStatus.DropDownStyle = ComboBoxStyle.DropDownList;
             this.cmbStatus.Items.AddRange(new string[] { "Scheduled", "Completed", "Cancelled", "No Show" });
 
-            // Buttons
-            this.btnSave.Text = "Save";
-            this.btnSave.Location = new System.Drawing.Point(controlX, startY + spacing * 6);
-            this.btnSave.Size = new System.Drawing.Size(90, 30);
-            this.btnSave.Click += new EventHandler(this.btnSave_Click);
+            // Buttons Panel
+            FlowLayoutPanel buttonPanel = new FlowLayoutPanel();
+            buttonPanel.Dock = DockStyle.Fill;
+            buttonPanel.FlowDirection = FlowDirection.RightToLeft; // Buttons align to the right
+            buttonPanel.Padding = new Padding(0, 10, 0, 0); // Padding from top
+            buttonPanel.BackColor = Color.Transparent; // Ensure background transparency
 
             this.btnCancel.Text = "Cancel";
-            this.btnCancel.Location = new System.Drawing.Point(controlX + 100, startY + spacing * 6);
-            this.btnCancel.Size = new System.Drawing.Size(90, 30);
+            UIHelper.StyleButton(this.btnCancel); // Apply button styling
+            this.btnCancel.Width = 100; 
             this.btnCancel.Click += new EventHandler(this.btnCancel_Click);
+            buttonPanel.Controls.Add(this.btnCancel);
 
-            // Add controls to form
-            this.Controls.AddRange(new Control[] {
-                lblPatient, cmbPatient,
-                lblDoctor, cmbDoctor,
-                lblDate, dtpDate,
-                lblTime, dtpTime,
-                lblReason, txtReason,
-                lblStatus, cmbStatus,
-                btnSave, btnCancel
-            });
+            this.btnSave.Text = "Save";
+            UIHelper.StyleButton(this.btnSave); // Apply button styling
+            this.btnSave.Width = 100; 
+            this.btnSave.Click += new EventHandler(this.btnSave_Click);
+            buttonPanel.Controls.Add(this.btnSave);
+            
+            mainLayout.Controls.Add(buttonPanel, 0, 6); // Buttons at the bottom
+            mainLayout.SetColumnSpan(buttonPanel, 2);
+
+            this.Controls.Add(mainLayout);
         }
 
         private void LoadPatients()
@@ -166,7 +171,7 @@ namespace HMS
                 string.IsNullOrWhiteSpace(txtReason.Text) ||
                 cmbStatus.SelectedIndex == -1)
             {
-                MessageBox.Show("Please fill in all fields.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please fill in all required fields.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 

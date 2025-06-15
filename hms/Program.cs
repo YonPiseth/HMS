@@ -14,22 +14,38 @@ static class Program
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
 
-        while (true)
+        // Show login form
+        using (var loginForm = new LoginForm())
         {
-            using (var loginForm = new LoginForm())
+            if (loginForm.ShowDialog() == DialogResult.OK)
             {
-                if (loginForm.ShowDialog() == DialogResult.OK)
+                // If login is successful, show splash screen, then run the main form
+                try
+                {
+                    using (var splashForm = new SplashForm())
+                    {
+                        splashForm.ShowDialog();
+                    }
+                }
+                catch (Exception splashEx)
+                {
+                    MessageBox.Show("Error showing splash screen: " + splashEx.Message, "Splash Screen Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return; // Exit if splash screen fails
+                }
+
+                try
                 {
                     using (var mainForm = new MainForm(loginForm.UserRole, loginForm.UserID))
                     {
                         Application.Run(mainForm);
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    break; // Exit the application if login is cancelled
+                    MessageBox.Show("Error starting main form: " + ex.Message, "Application Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+            // If login is cancelled, the application will exit naturally after this block
         }
     }    
 }

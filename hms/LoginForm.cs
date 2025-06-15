@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using System.Drawing; // Added for Color and Padding
 
 namespace HMS
 {
@@ -29,70 +30,73 @@ namespace HMS
 
             // Form settings
             this.Text = "Hospital Management System - Login";
-            this.Size = new System.Drawing.Size(400, 300);
+            this.Size = new System.Drawing.Size(450, 350); // Adjusted size for better layout
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.BackColor = System.Drawing.Color.White;
+            this.BackColor = Color.White; // Use Color from System.Drawing
+
+            // Main layout panel
+            TableLayoutPanel mainLayout = new TableLayoutPanel();
+            mainLayout.Dock = DockStyle.Fill;
+            mainLayout.ColumnCount = 2;
+            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F));
+            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65F));
+            mainLayout.RowCount = 4; // Title, Username, Password, Buttons
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60)); // Title row
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40)); // Username row
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40)); // Password row
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50)); // Buttons row
+            mainLayout.Padding = new Padding(30); // Add some padding around the content
+            mainLayout.AutoScroll = true; // Enable scrolling if content overflows
 
             // Title
             Label lblTitle = new Label();
             lblTitle.Text = "Welcome to HMS";
-            lblTitle.Font = new System.Drawing.Font("Segoe UI", 16, System.Drawing.FontStyle.Bold);
-            lblTitle.ForeColor = System.Drawing.Color.FromArgb(24, 33, 54);
-            lblTitle.Location = new System.Drawing.Point(100, 20);
-            lblTitle.Size = new System.Drawing.Size(200, 30);
-            lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            UIHelper.StyleLabelTitle(lblTitle); // Apply title style from UIHelper
+            mainLayout.Controls.Add(lblTitle, 0, 0);
+            mainLayout.SetColumnSpan(lblTitle, 2);
+            lblTitle.TextAlign = ContentAlignment.MiddleCenter; // Center text in the title area
 
             // Username
-            Label lblUsername = new Label();
-            lblUsername.Text = "Username:";
-            lblUsername.Location = new System.Drawing.Point(50, 80);
-            lblUsername.Size = new System.Drawing.Size(80, 20);
-            lblUsername.Font = new System.Drawing.Font("Segoe UI", 10);
-            this.txtUsername.Location = new System.Drawing.Point(140, 80);
-            this.txtUsername.Size = new System.Drawing.Size(200, 27);
-            this.txtUsername.Font = new System.Drawing.Font("Segoe UI", 10);
+            Label lblUsername = new Label { Text = "Username:" };
+            UIHelper.StyleLabel(lblUsername); // Apply label style
+            this.txtUsername.Dock = DockStyle.Fill; // Fill the cell
+            UIHelper.StyleTextBox(this.txtUsername); // Apply textbox style
+            mainLayout.Controls.Add(lblUsername, 0, 1);
+            mainLayout.Controls.Add(this.txtUsername, 1, 1);
 
             // Password
-            Label lblPassword = new Label();
-            lblPassword.Text = "Password:";
-            lblPassword.Location = new System.Drawing.Point(50, 120);
-            lblPassword.Size = new System.Drawing.Size(80, 20);
-            lblPassword.Font = new System.Drawing.Font("Segoe UI", 10);
-            this.txtPassword.Location = new System.Drawing.Point(140, 120);
-            this.txtPassword.Size = new System.Drawing.Size(200, 27);
-            this.txtPassword.PasswordChar = '*';
-            this.txtPassword.Font = new System.Drawing.Font("Segoe UI", 10);
+            Label lblPassword = new Label { Text = "Password:" };
+            UIHelper.StyleLabel(lblPassword); // Apply label style
+            this.txtPassword.Dock = DockStyle.Fill; // Fill the cell
+            UIHelper.StyleTextBox(this.txtPassword); // Apply textbox style
+            this.txtPassword.PasswordChar = '*'; // Keep password masking
+            mainLayout.Controls.Add(lblPassword, 0, 2);
+            mainLayout.Controls.Add(this.txtPassword, 1, 2);
 
-            // Login Button
-            this.btnLogin.Text = "Login";
-            this.btnLogin.Location = new System.Drawing.Point(140, 170);
-            this.btnLogin.Size = new System.Drawing.Size(90, 35);
-            this.btnLogin.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
-            this.btnLogin.ForeColor = System.Drawing.Color.White;
-            this.btnLogin.FlatStyle = FlatStyle.Flat;
-            this.btnLogin.Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Bold);
-            this.btnLogin.Click += new EventHandler(this.btnLogin_Click);
+            // Buttons Panel
+            FlowLayoutPanel buttonPanel = new FlowLayoutPanel();
+            buttonPanel.Dock = DockStyle.Fill;
+            buttonPanel.FlowDirection = FlowDirection.RightToLeft; // Align buttons to the right
+            buttonPanel.Padding = new Padding(0, 10, 0, 0); // Padding from top
 
-            // Cancel Button
             this.btnCancel.Text = "Cancel";
-            this.btnCancel.Location = new System.Drawing.Point(250, 170);
-            this.btnCancel.Size = new System.Drawing.Size(90, 35);
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(220, 220, 220);
-            this.btnCancel.ForeColor = System.Drawing.Color.FromArgb(24, 33, 54);
-            this.btnCancel.FlatStyle = FlatStyle.Flat;
-            this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 10);
+            UIHelper.StyleButton(this.btnCancel); // Apply button style
             this.btnCancel.Click += new EventHandler(this.btnCancel_Click);
+            buttonPanel.Controls.Add(this.btnCancel);
 
-            // Add controls to form
-            this.Controls.AddRange(new Control[] {
-                lblTitle,
-                lblUsername, txtUsername,
-                lblPassword, txtPassword,
-                btnLogin, btnCancel
-            });
+            this.btnLogin.Text = "Login";
+            UIHelper.StyleButton(this.btnLogin); // Apply button style
+            this.btnLogin.Click += new EventHandler(this.btnLogin_Click);
+            buttonPanel.Controls.Add(this.btnLogin);
+            
+            mainLayout.Controls.Add(buttonPanel, 0, 3);
+            mainLayout.SetColumnSpan(buttonPanel, 2);
+
+            // Add main layout to form
+            this.Controls.Add(mainLayout);
         }
 
         private void btnLogin_Click(object sender, EventArgs e)

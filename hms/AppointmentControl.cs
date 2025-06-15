@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using System.Drawing; // Added for Color and Point
 
 namespace HMS
 {
@@ -14,13 +15,12 @@ namespace HMS
         private Button btnUpdate;
         private Button btnLogout;
         private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=HMS;Integrated Security=True";
-        private Panel buttonPanel;
+        private FlowLayoutPanel buttonPanel;
 
         public AppointmentControl()
         {
             InitializeComponent();
             LoadAppointments();
-            StyleGridAndButtons();
         }
 
         private void InitializeComponent()
@@ -38,106 +38,99 @@ namespace HMS
             layout.Dock = DockStyle.Fill;
             layout.ColumnCount = 1;
             layout.RowCount = 4;
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48)); // Title
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48)); // Search
+            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 55)); // Title (slightly taller)
+            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 55)); // Search area (slightly taller)
             layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // DataGridView
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60)); // Button panel
-            layout.Padding = new Padding(16);
-            layout.BackColor = System.Drawing.Color.White;
+            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60)); // Button panel (taller for spacing)
+            layout.Padding = new Padding(15); // Consistent padding
+            layout.BackColor = Color.White;
 
             // Title
+            Panel titlePanel = new Panel();
+            UIHelper.ApplyPanelStyles(titlePanel); // Apply panel styling
+            titlePanel.Dock = DockStyle.Fill;
             Label lblTitle = new Label();
-            lblTitle.Text = "Appointments";
-            lblTitle.Font = new System.Drawing.Font("Segoe UI", 18, System.Drawing.FontStyle.Bold);
-            lblTitle.ForeColor = System.Drawing.Color.FromArgb(24, 33, 54);
-            lblTitle.Dock = DockStyle.Fill;
-            lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            lblTitle.Text = "Manage Appointments"; // More descriptive title
+            UIHelper.StyleLabelTitle(lblTitle); // Apply title label styling
+            lblTitle.Location = new Point(0, 0); // Position within panel
+            titlePanel.Controls.Add(lblTitle);
+            lblTitle.BringToFront(); // Ensure label is visible on panel
 
-            // Search
-            Panel searchPanel = new Panel();
-            searchPanel.Dock = DockStyle.Fill;
-            searchPanel.Height = 40;
-            searchPanel.Padding = new Padding(0, 8, 0, 8);
-            this.txtSearch.Dock = DockStyle.Left;
-            this.txtSearch.Width = 320;
-            this.txtSearch.Font = new System.Drawing.Font("Segoe UI", 11);
-            this.txtSearch.BorderStyle = BorderStyle.FixedSingle;
+            // Search Panel
+            FlowLayoutPanel searchFlowPanel = new FlowLayoutPanel();
+            searchFlowPanel.Dock = DockStyle.Fill;
+            searchFlowPanel.Padding = new Padding(0, 5, 0, 0); // Padding top
+            searchFlowPanel.FlowDirection = FlowDirection.LeftToRight;
+            searchFlowPanel.Controls.Add(new Label { Text = "Search: ", AutoSize = true, TextAlign = ContentAlignment.MiddleLeft });
+            UIHelper.StyleLabel((Label)searchFlowPanel.Controls[0]); // Style the new label
+
+            this.txtSearch.Width = 250; // Adjusted width
+            this.txtSearch.Height = 30; // Standard height
+            UIHelper.StyleTextBox(this.txtSearch); // Apply text box styling
             this.txtSearch.TextChanged += new EventHandler(this.txtSearch_TextChanged);
-            searchPanel.Controls.Add(this.txtSearch);
+            searchFlowPanel.Controls.Add(this.txtSearch);
 
             // DataGridView
             this.dataGridView1.Dock = DockStyle.Fill;
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.MultiSelect = false;
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Bold);
-            this.dataGridView1.DefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 10);
-            this.dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.AliceBlue;
+            UIHelper.StyleDataGridView(this.dataGridView1); // Apply DataGridView styling
             this.dataGridView1.DataBindingComplete += (s, e) => {
                 if (this.dataGridView1.Columns.Contains("IsDeleted"))
                     this.dataGridView1.Columns["IsDeleted"].Visible = false;
+
+                // Set specific column widths for better readability
+                if (this.dataGridView1.Columns.Contains("PatientName")) this.dataGridView1.Columns["PatientName"].Width = 150;
+                if (this.dataGridView1.Columns.Contains("DoctorName")) this.dataGridView1.Columns["DoctorName"].Width = 150;
+                if (this.dataGridView1.Columns.Contains("AppointmentDate")) this.dataGridView1.Columns["AppointmentDate"].Width = 100;
+                if (this.dataGridView1.Columns.Contains("AppointmentTime")) this.dataGridView1.Columns["AppointmentTime"].Width = 80;
+                if (this.dataGridView1.Columns.Contains("Status")) this.dataGridView1.Columns["Status"].Width = 90;
             };
 
-            // Button panel
+            // Button panel (action bar at bottom right)
             this.buttonPanel.Dock = DockStyle.Fill;
-            this.buttonPanel.Height = 48;
-            this.buttonPanel.Padding = new Padding(0, 8, 0, 0);
-            this.btnAdd.Text = "Add Appointment";
-            this.btnDelete.Text = "Delete";
-            this.btnUpdate.Text = "Update";
+            this.buttonPanel.FlowDirection = FlowDirection.RightToLeft; // Buttons align to the right
+            this.buttonPanel.Padding = new Padding(0, 10, 0, 0); // Padding from top
+
+            // Style and add buttons to buttonPanel (in reverse order for RightToLeft flow)
             this.btnLogout.Text = "Log Out";
-            foreach (Button btn in new[] { btnAdd, btnDelete, btnUpdate, btnLogout })
-            {
-                btn.FlatStyle = FlatStyle.Flat;
-                btn.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
-                btn.ForeColor = System.Drawing.Color.White;
-                btn.Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Bold);
-                btn.Height = 36;
-                btn.Width = 120;
-                btn.Margin = new Padding(10, 0, 0, 0);
-                btn.FlatAppearance.BorderSize = 0;
-                this.buttonPanel.Controls.Add(btn);
-            }
-            this.btnAdd.Click += new EventHandler(this.btnAdd_Click);
-            this.btnDelete.Click += new EventHandler(this.btnDelete_Click);
-            this.btnUpdate.Click += new EventHandler(this.btnUpdate_Click);
+            UIHelper.StyleButton(this.btnLogout);
             this.btnLogout.Click += new EventHandler(this.btnLogout_Click);
+            this.buttonPanel.Controls.Add(this.btnLogout);
+
+            this.btnDelete.Text = "Delete";
+            UIHelper.StyleButton(this.btnDelete);
+            this.btnDelete.Click += new EventHandler(this.btnDelete_Click);
+            this.buttonPanel.Controls.Add(this.btnDelete);
+
+            this.btnUpdate.Text = "Update";
+            UIHelper.StyleButton(this.btnUpdate);
+            this.btnUpdate.Click += new EventHandler(this.btnUpdate_Click);
+            this.buttonPanel.Controls.Add(this.btnUpdate);
+
+            this.btnAdd.Text = "Add Appointment";
+            UIHelper.StyleButton(this.btnAdd);
+            this.btnAdd.Click += new EventHandler(this.btnAdd_Click);
+            this.buttonPanel.Controls.Add(this.btnAdd);
 
             // Add controls to layout
-            layout.Controls.Add(lblTitle, 0, 0);
-            layout.Controls.Add(searchPanel, 0, 1);
+            layout.Controls.Add(titlePanel, 0, 0);
+            layout.Controls.Add(searchFlowPanel, 0, 1);
             layout.Controls.Add(this.dataGridView1, 0, 2);
             layout.Controls.Add(this.buttonPanel, 0, 3);
+
             // Clear and add layout to UserControl
             this.Controls.Clear();
             this.Controls.Add(layout);
-            this.Size = new System.Drawing.Size(900, 500);
-        }
-
-        private void StyleGridAndButtons()
-        {
-            dataGridView1.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Bold);
-            dataGridView1.DefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 10);
-            dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.AliceBlue;
-            foreach (Button btn in new[] { btnAdd, btnDelete, btnUpdate, btnLogout })
-            {
-                btn.FlatStyle = FlatStyle.Flat;
-                btn.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
-                btn.ForeColor = System.Drawing.Color.White;
-                btn.Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Bold);
-                btn.Height = 36;
-            }
+            this.Size = new Size(950, 550); // Adjusted default size for the control
         }
 
         private void LoadAppointments(string search = "")
         {
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                string query = @"SELECT a.*, p.FirstName + ' ' + p.LastName as PatientName, 
-                                d.FirstName + ' ' + d.LastName as DoctorName 
+                string query = @"SELECT a.AppointmentID, 
+                                p.FirstName + ' ' + p.LastName as PatientName,
+                                d.FirstName + ' ' + d.LastName as DoctorName,
+                                a.AppointmentDate, a.AppointmentTime, a.Reason, a.Status 
                                 FROM tblAppointment a 
                                 LEFT JOIN tblPatient p ON a.PatientID = p.PatientID 
                                 LEFT JOIN tblDoctor d ON a.DoctorID = d.DoctorID 
@@ -152,6 +145,44 @@ namespace HMS
                 DataTable dt = new DataTable();
                 da.Fill(dt);
                 dataGridView1.DataSource = dt;
+            }
+        }
+
+        // Overload to load appointments for a specific patient
+        public void LoadPatientAppointments(int patientUserID)
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                string query = @"SELECT a.AppointmentID, 
+                                p.FirstName + ' ' + p.LastName as PatientName,
+                                d.FirstName + ' ' + d.LastName as DoctorName,
+                                a.AppointmentDate, a.AppointmentTime, a.Reason, a.Status 
+                                FROM tblAppointment a 
+                                INNER JOIN tblPatient p ON a.PatientID = p.PatientID 
+                                LEFT JOIN tblDoctor d ON a.DoctorID = d.DoctorID 
+                                WHERE a.IsDeleted = 0 AND p.UserID = @PatientUserID 
+                                ORDER BY a.AppointmentDate DESC, a.AppointmentTime DESC";
+                SqlDataAdapter da = new SqlDataAdapter(query, con);
+                da.SelectCommand.Parameters.AddWithValue("@PatientUserID", patientUserID);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                dataGridView1.DataSource = dt;
+
+                // Hide action buttons for patient view
+                btnAdd.Visible = false;
+                btnUpdate.Visible = false;
+                btnDelete.Visible = false;
+                btnLogout.Visible = false; // Also hide logout as it's handled by MainForm
+
+                // Make the search bar read-only for patient view if desired
+                txtSearch.ReadOnly = true;
+                txtSearch.BackColor = System.Drawing.SystemColors.Control;
+
+                // Adjust grid to fill more space if buttons are hidden
+                TableLayoutPanel parentLayout = this.Parent as TableLayoutPanel;
+                if (parentLayout != null) {
+                    parentLayout.RowStyles[3].Height = 0; // Collapse button row
+                }
             }
         }
 
@@ -210,13 +241,14 @@ namespace HMS
         {
             if (dataGridView1.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Please select an appointment to update.");
+                MessageBox.Show("Please select an appointment to update.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             DataGridViewRow row = dataGridView1.SelectedRows[0];
             var form = new AppointmentForm();
             
             // Fill form with selected row data
+            // Ensure PatientID and DoctorID are correctly mapped to SelectedValue
             form.cmbPatient.SelectedValue = row.Cells["PatientID"].Value;
             form.cmbDoctor.SelectedValue = row.Cells["DoctorID"].Value;
             form.dtpDate.Value = Convert.ToDateTime(row.Cells["AppointmentDate"].Value);
@@ -251,77 +283,32 @@ namespace HMS
         {
             if (dataGridView1.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Please select an appointment to delete.");
+                MessageBox.Show("Please select an appointment to delete.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (MessageBox.Show("Are you sure you want to delete this appointment?", "Confirm Delete", 
-                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+
+            DialogResult dialogResult = MessageBox.Show("Are you sure you want to delete this appointment?", "Confirm Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (dialogResult == DialogResult.Yes)
             {
-                DataGridViewRow row = dataGridView1.SelectedRows[0];
+                int appointmentId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["AppointmentID"].Value);
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
-                    string query = "UPDATE tblAppointment SET IsDeleted=1 WHERE AppointmentID=@AppointmentID";
+                    string query = "UPDATE tblAppointment SET IsDeleted = 1 WHERE AppointmentID = @AppointmentID"; // Soft delete
                     SqlCommand cmd = new SqlCommand(query, con);
-                    cmd.Parameters.AddWithValue("@AppointmentID", row.Cells["AppointmentID"].Value);
+                    cmd.Parameters.AddWithValue("@AppointmentID", appointmentId);
                     con.Open();
                     cmd.ExecuteNonQuery();
                 }
                 LoadAppointments();
-                MessageBox.Show("Appointment deleted successfully!", "Deleted", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Appointment deleted successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
-            // Log out (to be implemented)
-            MessageBox.Show("Log Out clicked");
-        }
-
-        public void LoadPatientAppointments(int userID)
-        {
-            int patientID = -1;
-            using (SqlConnection con = new SqlConnection(connectionString))
-            {
-                con.Open();
-                // First, get the PatientID linked to the UserID
-                SqlCommand getPatientIdCmd = new SqlCommand("SELECT PatientID FROM tblPatient WHERE UserID = @UserID", con);
-                getPatientIdCmd.Parameters.AddWithValue("@UserID", userID);
-                object result = getPatientIdCmd.ExecuteScalar();
-                if (result != null)
-                {
-                    patientID = Convert.ToInt32(result);
-                }
-
-                if (patientID != -1)
-                {
-                    string query = @"SELECT a.AppointmentID, p.FirstName + ' ' + p.LastName as PatientName, 
-                                d.FirstName + ' ' + d.LastName as DoctorName, 
-                                a.AppointmentDate, a.AppointmentTime, a.Reason, a.Status
-                                FROM tblAppointment a
-                                INNER JOIN tblPatient p ON a.PatientID = p.PatientID
-                                INNER JOIN tblDoctor d ON a.DoctorID = d.DoctorID
-                                WHERE a.PatientID = @PatientID AND a.IsDeleted = 0
-                                ORDER BY a.AppointmentDate DESC, a.AppointmentTime DESC";
-
-                    SqlCommand cmd = new SqlCommand(query, con);
-                    cmd.Parameters.AddWithValue("@PatientID", patientID);
-                    SqlDataAdapter da = new SqlDataAdapter(cmd);
-                    DataTable dt = new DataTable();
-                    da.Fill(dt);
-                    dataGridView1.DataSource = dt;
-                }
-                else
-                {
-                    // Handle case where no patient is found for the given UserID
-                    dataGridView1.DataSource = null; // Clear data grid
-                    MessageBox.Show("No patient found for the logged-in user.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-
-                // Hide the Add, Update, and Delete buttons for patient view
-                btnAdd.Visible = false;
-                btnUpdate.Visible = false;
-                btnDelete.Visible = false;
-            }
+            // This button might be redundant if the logout is handled by the MainForm
+            // For now, it could close the current control or trigger a main form event
+            MessageBox.Show("Logout functionality would be implemented here.", "Logout", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

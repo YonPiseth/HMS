@@ -2,6 +2,8 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using System.Drawing; // Added for Color and Point
+using HMS.Forms;
 
 namespace HMS
 {
@@ -13,111 +15,195 @@ namespace HMS
         private Button btnDelete;
         private Button btnUpdate;
         private Button btnLogout;
+        private Button btnViewReceipts;
         private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=HMS;Integrated Security=True";
         private FlowLayoutPanel buttonPanel;
+        private Label lblPatientDetails;
+        private Panel patientDetailsPanel;
 
         public InvoiceControl()
         {
             InitializeComponent();
-            LoadInvoices();
+            LoadPatients();
             this.txtSearch.TextChanged += new EventHandler(this.txtSearch_TextChanged);
-            this.dataGridView1.DataBindingComplete += (s, e) => {
-                if (this.dataGridView1.Columns.Contains("IsDeleted"))
-                    this.dataGridView1.Columns["IsDeleted"].Visible = false;
-            };
+            this.dataGridView1.SelectionChanged += new EventHandler(this.dataGridView1_SelectionChanged);
         }
 
         private void InitializeComponent()
         {
-            this.dataGridView1 = new DataGridView();
-            this.txtSearch = new TextBox();
-            this.btnAdd = new Button();
-            this.btnDelete = new Button();
-            this.btnUpdate = new Button();
-            this.btnLogout = new Button();
-            this.buttonPanel = new FlowLayoutPanel();
-
-            // Use TableLayoutPanel for clean layout
-            TableLayoutPanel layout = new TableLayoutPanel();
-            layout.Dock = DockStyle.Fill;
-            layout.ColumnCount = 1;
-            layout.RowCount = 4;
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48)); // Title
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48)); // Search
-            layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // DataGridView
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60)); // Button panel
-            layout.Padding = new Padding(16);
-            layout.BackColor = System.Drawing.Color.White;
+            // Main layout
+            TableLayoutPanel mainLayout = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                RowCount = 4,
+                Padding = new Padding(10)
+            };
+            UIHelper.ApplyPanelStyles(mainLayout);
+            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40)); // Title
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40)); // Search
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 120)); // Patient Details - Increased height
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // DataGrid
 
             // Title
-            Label lblTitle = new Label();
-            lblTitle.Text = "Invoices";
-            lblTitle.Font = new System.Drawing.Font("Segoe UI", 18, System.Drawing.FontStyle.Bold);
-            lblTitle.ForeColor = System.Drawing.Color.FromArgb(24, 33, 54);
-            lblTitle.Dock = DockStyle.Fill;
-            lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            Label lblTitle = new Label
+            {
+                Text = "Patient Invoices",
+                TextAlign = ContentAlignment.MiddleLeft,
+                Dock = DockStyle.Fill,
+                Font = new Font("Segoe UI", 14, FontStyle.Bold)
+            };
+            UIHelper.StyleLabelTitle(lblTitle);
+            mainLayout.Controls.Add(lblTitle, 0, 0);
 
-            // Search
-            Panel searchPanel = new Panel();
-            searchPanel.Dock = DockStyle.Fill;
-            searchPanel.Height = 40;
-            searchPanel.Padding = new Padding(0, 8, 0, 8);
-            this.txtSearch.Dock = DockStyle.Left;
-            this.txtSearch.Width = 320;
-            this.txtSearch.Font = new System.Drawing.Font("Segoe UI", 11);
-            this.txtSearch.BorderStyle = BorderStyle.FixedSingle;
-            searchPanel.Controls.Add(this.txtSearch);
+            // Search Panel
+            FlowLayoutPanel searchFlowPanel = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(0, 5, 0, 0),
+                FlowDirection = FlowDirection.LeftToRight,
+                WrapContents = false // Prevent wrapping if text is too long
+            };
+            searchFlowPanel.Controls.Add(new Label { Text = "Search Patient: ", AutoSize = true, TextAlign = ContentAlignment.MiddleLeft });
+            UIHelper.StyleLabel((Label)searchFlowPanel.Controls[0]);
+
+            this.txtSearch = new TextBox
+            {
+                Width = 250,
+                Height = 30,
+                Anchor = AnchorStyles.Left // Anchor to left to prevent horizontal stretching
+            };
+            UIHelper.StyleTextBox(this.txtSearch);
+            searchFlowPanel.Controls.Add(this.txtSearch);
+            mainLayout.Controls.Add(searchFlowPanel, 0, 1);
+
+            // Patient Details Panel
+            patientDetailsPanel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(10),
+                AutoSize = true, // Allow panel to size itself based on content
+                AutoSizeMode = AutoSizeMode.GrowAndShrink // Grow and shrink with content
+            };
+            UIHelper.ApplyPanelStyles(patientDetailsPanel);
+
+            lblPatientDetails = new Label
+            {
+                Text = "Select a patient to view details and create invoice/receipt",
+                AutoSize = true,
+                Location = new Point(10, 10)
+            };
+            UIHelper.StyleLabel(lblPatientDetails);
+            patientDetailsPanel.Controls.Add(lblPatientDetails);
+            mainLayout.Controls.Add(patientDetailsPanel, 0, 2);
 
             // DataGridView
-            this.dataGridView1.Dock = DockStyle.Fill;
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.MultiSelect = false;
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-
-            // Button panel
-            this.buttonPanel.Dock = DockStyle.Fill;
-            this.buttonPanel.Height = 48;
-            this.buttonPanel.Padding = new Padding(0, 8, 0, 0);
-            this.btnAdd.Text = "Add Invoice";
-            this.btnDelete.Text = "Delete";
-            this.btnUpdate.Text = "Update";
-            this.btnLogout.Text = "Log Out";
-            foreach (Button btn in new[] { btnAdd, btnDelete, btnUpdate, btnLogout })
+            this.dataGridView1 = new DataGridView
             {
-                btn.FlatStyle = FlatStyle.Flat;
-                btn.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
-                btn.ForeColor = System.Drawing.Color.White;
-                btn.Font = new System.Drawing.Font("Segoe UI", 10, System.Drawing.FontStyle.Bold);
-                btn.Height = 36;
-                btn.Width = 120;
-                btn.Margin = new Padding(10, 0, 0, 0);
-                btn.FlatAppearance.BorderSize = 0;
-                this.buttonPanel.Controls.Add(btn);
-            }
+                Dock = DockStyle.Fill,
+                AllowUserToAddRows = false,
+                AllowUserToDeleteRows = false,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                MultiSelect = false,
+                ReadOnly = true,
+                RowHeadersVisible = false,
+                AutoGenerateColumns = false,
+                ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing, // Disable resizing for headers
+                AllowUserToResizeRows = false // Prevent row height changes
+            };
+            UIHelper.StyleDataGridView(this.dataGridView1);
+            SetupDataGridViewColumns();
+            mainLayout.Controls.Add(this.dataGridView1, 0, 3);
+
+            // Button Panel
+            this.buttonPanel = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Bottom,
+                FlowDirection = FlowDirection.RightToLeft,
+                Padding = new Padding(0, 5, 0, 0),
+                AutoSize = true
+            };
+            UIHelper.ApplyPanelStyles(this.buttonPanel);
+
+            this.btnAdd = new Button { Text = "Create Invoice", AutoSize = true };
+            this.btnDelete = new Button { Text = "Delete", AutoSize = true };
+            this.btnUpdate = new Button { Text = "Update", AutoSize = true };
+            this.btnLogout = new Button { Text = "Logout", AutoSize = true };
+            this.btnViewReceipts = new Button { Text = "View Old Receipts", AutoSize = true };
+
+            UIHelper.StyleButton(this.btnAdd);
+            UIHelper.StyleButton(this.btnDelete);
+            UIHelper.StyleButton(this.btnUpdate);
+            UIHelper.StyleButton(this.btnLogout);
+            UIHelper.StyleButton(this.btnViewReceipts);
+
             this.btnAdd.Click += new EventHandler(this.btnAdd_Click);
             this.btnDelete.Click += new EventHandler(this.btnDelete_Click);
             this.btnUpdate.Click += new EventHandler(this.btnUpdate_Click);
             this.btnLogout.Click += new EventHandler(this.btnLogout_Click);
+            this.btnViewReceipts.Click += new EventHandler(this.btnViewReceipts_Click);
 
-            // Add controls to layout
-            layout.Controls.Add(lblTitle, 0, 0);
-            layout.Controls.Add(searchPanel, 0, 1);
-            layout.Controls.Add(this.dataGridView1, 0, 2);
-            layout.Controls.Add(this.buttonPanel, 0, 3);
-            // Clear and add layout to UserControl
+            this.buttonPanel.Controls.AddRange(new Control[] { this.btnLogout, this.btnUpdate, this.btnDelete, this.btnAdd, this.btnViewReceipts });
+            mainLayout.Controls.Add(this.buttonPanel, 0, 4); // Added to row 4
+
             this.Controls.Clear();
-            this.Controls.Add(layout);
-            this.Size = new System.Drawing.Size(900, 500);
+            this.Controls.Add(mainLayout);
         }
 
-        private void LoadInvoices(string search = "")
+        private void SetupDataGridViewColumns()
+        {
+            dataGridView1.Columns.Clear();
+
+            dataGridView1.Columns.Add("PatientID", "Patient ID");
+            dataGridView1.Columns["PatientID"].DataPropertyName = "PatientID";
+            dataGridView1.Columns.Add("FirstName", "First Name");
+            dataGridView1.Columns["FirstName"].DataPropertyName = "FirstName";
+            dataGridView1.Columns.Add("LastName", "Last Name");
+            dataGridView1.Columns["LastName"].DataPropertyName = "LastName";
+            dataGridView1.Columns.Add("ContactNumber", "Phone");
+            dataGridView1.Columns["ContactNumber"].DataPropertyName = "ContactNumber";
+            dataGridView1.Columns.Add("Email", "Email");
+            dataGridView1.Columns["Email"].DataPropertyName = "Email";
+            dataGridView1.Columns.Add("LastVisit", "Last Visit");
+            dataGridView1.Columns["LastVisit"].DataPropertyName = "LastVisit";
+            dataGridView1.Columns.Add("OutstandingBalance", "Outstanding Balance");
+            dataGridView1.Columns["OutstandingBalance"].DataPropertyName = "OutstandingBalance";
+
+            // Set column widths
+            dataGridView1.Columns["PatientID"].Width = 80;
+            dataGridView1.Columns["FirstName"].Width = 120;
+            dataGridView1.Columns["LastName"].Width = 120;
+            dataGridView1.Columns["ContactNumber"].Width = 100;
+            dataGridView1.Columns["Email"].Width = 150;
+            dataGridView1.Columns["LastVisit"].Width = 100;
+            dataGridView1.Columns["OutstandingBalance"].Width = 120;
+
+            // Format columns
+            dataGridView1.Columns["OutstandingBalance"].DefaultCellStyle.Format = "C";
+            dataGridView1.Columns["LastVisit"].DefaultCellStyle.Format = "MM/dd/yyyy";
+
+            foreach (DataGridViewColumn column in dataGridView1.Columns)
+            {
+                column.HeaderCell.Style.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+                column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+        }
+
+        private void LoadPatients(string search = "")
         {
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                string query = @"SELECT i.*, p.FirstName + ' ' + p.LastName as PatientName FROM tblInvoice i LEFT JOIN tblPatient p ON i.PatientID = p.PatientID WHERE (CAST(i.InvoiceID AS VARCHAR) LIKE @search OR p.FirstName + ' ' + p.LastName LIKE @search OR CAST(i.TotalAmount AS VARCHAR) LIKE @search OR i.PaymentStatus LIKE @search)";
+                string query = @"SELECT p.PatientID, p.FirstName, p.LastName, p.ContactNumber, p.Email,
+                               (SELECT MAX(InvoiceDate) FROM tblInvoice WHERE PatientID = p.PatientID) as LastVisit,
+                               (SELECT SUM(TotalAmount) FROM tblInvoice WHERE PatientID = p.PatientID AND PaymentStatus = 'Pending') as OutstandingBalance
+                               FROM tblPatient p
+                               WHERE p.IsDeleted = 0
+                               AND (p.FirstName + ' ' + p.LastName LIKE @search 
+                               OR p.ContactNumber LIKE @search 
+                               OR p.Email LIKE @search)
+                               ORDER BY p.PatientID ASC"; // Order by PatientID in ascending order
+
                 SqlDataAdapter da = new SqlDataAdapter(query, con);
                 da.SelectCommand.Parameters.AddWithValue("@search", "%" + search + "%");
                 DataTable dt = new DataTable();
@@ -126,54 +212,63 @@ namespace HMS
             }
         }
 
+        private void dataGridView1_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count > 0)
+            {
+                DataGridViewRow row = dataGridView1.SelectedRows[0];
+                string patientDetails = $"Patient: {row.Cells["FirstName"].Value} {row.Cells["LastName"].Value}\n" +
+                                     $"Phone: {row.Cells["ContactNumber"].Value}\n" +
+                                     $"Email: {row.Cells["Email"].Value}\n" +
+                                     $"Last Visit: {row.Cells["LastVisit"].Value}\n" +
+                                     $"Outstanding Balance: {row.Cells["OutstandingBalance"].Value:C}";
+                lblPatientDetails.Text = patientDetails;
+            }
+            else
+            {
+                lblPatientDetails.Text = "Select a patient to view details and create invoice/receipt";
+            }
+        }
+
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            LoadInvoices(txtSearch.Text);
+            LoadPatients(txtSearch.Text);
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            var form = new InvoiceForm();
-            if (form.ShowDialog() == DialogResult.OK)
+            if (dataGridView1.SelectedRows.Count == 0)
             {
-                using (SqlConnection con = new SqlConnection(connectionString))
-                {
-                    string query = @"INSERT INTO tblInvoice (PatientID, TotalAmount, InvoiceDate, PaymentStatus, DueDate)
-                                   VALUES (@PatientID, @TotalAmount, @InvoiceDate, @PaymentStatus, @DueDate)";
-                    SqlCommand cmd = new SqlCommand(query, con);
-                    cmd.Parameters.AddWithValue("@PatientID", form.cmbPatient.SelectedValue);
-                    cmd.Parameters.AddWithValue("@TotalAmount", form.numTotalAmount.Value);
-                    cmd.Parameters.AddWithValue("@InvoiceDate", form.dtpInvoiceDate.Value);
-                    cmd.Parameters.AddWithValue("@PaymentStatus", form.cmbPaymentStatus.Text);
-                    cmd.Parameters.AddWithValue("@DueDate", form.dtpDueDate.Value);
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                }
-                LoadInvoices();
-                MessageBox.Show("Invoice added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Please select a patient to create an invoice.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
+
+            int patientId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["PatientID"].Value);
+            var invoiceForm = new InvoiceForm(patientId);
+            invoiceForm.ShowDialog();
+            LoadPatients(txtSearch.Text); // Refresh the list
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
             if (dataGridView1.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Please select an invoice to delete.");
+                MessageBox.Show("Please select a patient to delete.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (MessageBox.Show("Are you sure you want to delete this invoice?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+
+            if (MessageBox.Show("Are you sure you want to delete this patient?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                DataGridViewRow row = dataGridView1.SelectedRows[0];
+                int patientId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["PatientID"].Value);
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
-                    string query = "DELETE FROM tblInvoice WHERE InvoiceID=@InvoiceID";
-                    SqlCommand cmd = new SqlCommand(query, con);
-                    cmd.Parameters.AddWithValue("@InvoiceID", row.Cells["InvoiceID"].Value);
                     con.Open();
+                    string query = "UPDATE tblPatient SET IsDeleted = 1 WHERE PatientID = @PatientID";
+                    SqlCommand cmd = new SqlCommand(query, con);
+                    cmd.Parameters.AddWithValue("@PatientID", patientId);
                     cmd.ExecuteNonQuery();
                 }
-                LoadInvoices();
-                MessageBox.Show("Invoice deleted successfully!", "Deleted", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LoadPatients(txtSearch.Text);
             }
         }
 
@@ -181,40 +276,33 @@ namespace HMS
         {
             if (dataGridView1.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Please select an invoice to update.");
+                MessageBox.Show("Please select a patient to update.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            DataGridViewRow row = dataGridView1.SelectedRows[0];
-            var form = new InvoiceForm();
-            // Fill form with selected row data
-            form.cmbPatient.SelectedValue = row.Cells["PatientID"].Value;
-            form.numTotalAmount.Value = Convert.ToDecimal(row.Cells["TotalAmount"].Value);
-            form.dtpInvoiceDate.Value = Convert.ToDateTime(row.Cells["InvoiceDate"].Value);
-            form.cmbPaymentStatus.Text = row.Cells["PaymentStatus"].Value?.ToString();
-            form.dtpDueDate.Value = Convert.ToDateTime(row.Cells["DueDate"].Value);
-            if (form.ShowDialog() == DialogResult.OK)
-            {
-                using (SqlConnection con = new SqlConnection(connectionString))
-                {
-                    string query = @"UPDATE tblInvoice SET PatientID=@PatientID, TotalAmount=@TotalAmount, InvoiceDate=@InvoiceDate, PaymentStatus=@PaymentStatus, DueDate=@DueDate WHERE InvoiceID=@InvoiceID";
-                    SqlCommand cmd = new SqlCommand(query, con);
-                    cmd.Parameters.AddWithValue("@InvoiceID", row.Cells["InvoiceID"].Value);
-                    cmd.Parameters.AddWithValue("@PatientID", form.cmbPatient.SelectedValue);
-                    cmd.Parameters.AddWithValue("@TotalAmount", form.numTotalAmount.Value);
-                    cmd.Parameters.AddWithValue("@InvoiceDate", form.dtpInvoiceDate.Value);
-                    cmd.Parameters.AddWithValue("@PaymentStatus", form.cmbPaymentStatus.Text);
-                    cmd.Parameters.AddWithValue("@DueDate", form.dtpDueDate.Value);
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                }
-                LoadInvoices();
-                MessageBox.Show("Invoice updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+
+            int patientId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["PatientID"].Value);
+            var patientForm = new PatientRegistrationForm(patientId);
+            patientForm.ShowDialog();
+            LoadPatients(txtSearch.Text);
         }
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Log Out clicked");
+            // Assuming main form handles logout
+            this.ParentForm.Close(); 
+        }
+
+        private void btnViewReceipts_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a patient to view their invoice history.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int patientId = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["PatientID"].Value);
+            var patientInvoiceHistoryForm = new HMS.Forms.PatientInvoiceHistoryForm(patientId);
+            patientInvoiceHistoryForm.ShowDialog();
         }
     }
 } 

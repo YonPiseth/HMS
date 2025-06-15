@@ -2,6 +2,7 @@ using System;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 using System.Data;
+using System.Drawing;
 
 namespace HMS
 {
@@ -35,108 +36,99 @@ namespace HMS
 
             // Form settings
             this.Text = "Room Information";
-            this.Size = new System.Drawing.Size(400, 450);
+            this.Size = new Size(450, 480); // Adjusted size
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.BackColor = Color.White; // Set form background color
+
+            // Main layout panel
+            TableLayoutPanel mainLayout = new TableLayoutPanel();
+            mainLayout.Dock = DockStyle.Fill;
+            mainLayout.ColumnCount = 2;
+            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F));
+            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65F));
+            mainLayout.RowCount = 7; // Number of rows for controls + buttons
+            for (int i = 0; i < 6; i++) // Set height for control rows
+            {
+                mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));
+            }
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50)); // Buttons row
+            mainLayout.Padding = new Padding(20); // More generous padding
+            mainLayout.AutoScroll = true;
+            UIHelper.ApplyPanelStyles(mainLayout); // Apply panel style to main layout
+
+            // Helper to add a row of label and control
+            Action<string, Control, int> addRow = (labelText, control, row) =>
+            {
+                Label lbl = new Label { Text = labelText, AutoSize = true, TextAlign = ContentAlignment.MiddleLeft, Anchor = AnchorStyles.Left };
+                UIHelper.StyleLabel(lbl);
+                mainLayout.Controls.Add(lbl, 0, row);
+                control.Dock = DockStyle.Fill;
+                mainLayout.Controls.Add(control, 1, row);
+            };
 
             // Room Number
-            Label lblRoomNumber = new Label();
-            lblRoomNumber.Text = "Room Number:";
-            lblRoomNumber.Location = new System.Drawing.Point(20, 20);
-            lblRoomNumber.Size = new System.Drawing.Size(120, 20);
-
-            this.txtRoomNumber.Location = new System.Drawing.Point(150, 20);
-            this.txtRoomNumber.Size = new System.Drawing.Size(200, 27);
+            addRow("Room Number:", txtRoomNumber, 0);
+            UIHelper.StyleTextBox(this.txtRoomNumber);
 
             // Room Type
-            Label lblRoomType = new Label();
-            lblRoomType.Text = "Room Type:";
-            lblRoomType.Location = new System.Drawing.Point(20, 60);
-            lblRoomType.Size = new System.Drawing.Size(120, 20);
-
-            this.cmbRoomType.Location = new System.Drawing.Point(150, 60);
-            this.cmbRoomType.Size = new System.Drawing.Size(200, 27);
+            addRow("Room Type:", cmbRoomType, 1);
+            UIHelper.StyleComboBox(this.cmbRoomType);
             this.cmbRoomType.DropDownStyle = ComboBoxStyle.DropDownList;
 
             // Floor
-            Label lblFloor = new Label();
-            lblFloor.Text = "Floor:";
-            lblFloor.Location = new System.Drawing.Point(20, 100);
-            lblFloor.Size = new System.Drawing.Size(120, 20);
-
-            this.numFloor.Location = new System.Drawing.Point(150, 100);
-            this.numFloor.Size = new System.Drawing.Size(200, 27);
+            addRow("Floor:", numFloor, 2);
+            this.numFloor.Dock = DockStyle.Fill;
             this.numFloor.Minimum = 1;
             this.numFloor.Maximum = 100;
+            this.numFloor.Font = new Font("Segoe UI", 10); // Manual style for NumericUpDown
 
             // Capacity
-            Label lblCapacity = new Label();
-            lblCapacity.Text = "Capacity:";
-            lblCapacity.Location = new System.Drawing.Point(20, 140);
-            lblCapacity.Size = new System.Drawing.Size(120, 20);
-
-            this.numCapacity.Location = new System.Drawing.Point(150, 140);
-            this.numCapacity.Size = new System.Drawing.Size(200, 27);
+            addRow("Capacity:", numCapacity, 3);
+            this.numCapacity.Dock = DockStyle.Fill;
             this.numCapacity.Minimum = 1;
             this.numCapacity.Maximum = 10;
+            this.numCapacity.Font = new Font("Segoe UI", 10); // Manual style for NumericUpDown
 
             // Rate Per Day
-            Label lblRatePerDay = new Label();
-            lblRatePerDay.Text = "Rate Per Day:";
-            lblRatePerDay.Location = new System.Drawing.Point(20, 180);
-            lblRatePerDay.Size = new System.Drawing.Size(120, 20);
-
-            this.numRatePerDay.Location = new System.Drawing.Point(150, 180);
-            this.numRatePerDay.Size = new System.Drawing.Size(200, 27);
+            addRow("Rate Per Day:", numRatePerDay, 4);
+            this.numRatePerDay.Dock = DockStyle.Fill;
             this.numRatePerDay.Minimum = 0;
             this.numRatePerDay.Maximum = 100000;
             this.numRatePerDay.DecimalPlaces = 2;
+            this.numRatePerDay.Font = new Font("Segoe UI", 10); // Manual style for NumericUpDown
 
             // Status
-            Label lblStatus = new Label();
-            lblStatus.Text = "Status:";
-            lblStatus.Location = new System.Drawing.Point(20, 220);
-            lblStatus.Size = new System.Drawing.Size(120, 20);
-
-            this.cmbStatus.Location = new System.Drawing.Point(150, 220);
-            this.cmbStatus.Size = new System.Drawing.Size(200, 27);
+            addRow("Status:", cmbStatus, 5);
+            UIHelper.StyleComboBox(this.cmbStatus);
             this.cmbStatus.DropDownStyle = ComboBoxStyle.DropDownList;
             this.cmbStatus.Items.AddRange(new string[] { "Available", "Occupied", "Maintenance" });
 
-            // Save Button
-            this.btnSave.Text = "Save";
-            this.btnSave.Location = new System.Drawing.Point(150, 280);
-            this.btnSave.Size = new System.Drawing.Size(90, 35);
-            this.btnSave.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
-            this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.FlatStyle = FlatStyle.Flat;
-            this.btnSave.Click += new EventHandler(this.btnSave_Click);
+            // Buttons Panel
+            FlowLayoutPanel buttonPanel = new FlowLayoutPanel();
+            buttonPanel.Dock = DockStyle.Fill;
+            buttonPanel.FlowDirection = FlowDirection.RightToLeft; // Buttons align to the right
+            buttonPanel.Padding = new Padding(0, 10, 0, 0); // Padding from top
+            buttonPanel.BackColor = Color.Transparent; // Ensure background transparency
 
-            // Cancel Button
             this.btnCancel.Text = "Cancel";
-            this.btnCancel.Location = new System.Drawing.Point(260, 280);
-            this.btnCancel.Size = new System.Drawing.Size(90, 35);
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(220, 220, 220);
-            this.btnCancel.FlatStyle = FlatStyle.Flat;
+            UIHelper.StyleButton(this.btnCancel); // Apply button styling
+            this.btnCancel.Width = 100; 
             this.btnCancel.Click += new EventHandler(this.btnCancel_Click);
+            buttonPanel.Controls.Add(this.btnCancel);
 
-            // Add controls
-            this.Controls.Add(lblRoomNumber);
-            this.Controls.Add(this.txtRoomNumber);
-            this.Controls.Add(lblRoomType);
-            this.Controls.Add(this.cmbRoomType);
-            this.Controls.Add(lblFloor);
-            this.Controls.Add(this.numFloor);
-            this.Controls.Add(lblCapacity);
-            this.Controls.Add(this.numCapacity);
-            this.Controls.Add(lblRatePerDay);
-            this.Controls.Add(this.numRatePerDay);
-            this.Controls.Add(lblStatus);
-            this.Controls.Add(this.cmbStatus);
-            this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.btnCancel);
+            this.btnSave.Text = "Save";
+            UIHelper.StyleButton(this.btnSave); // Apply button styling
+            this.btnSave.Width = 100; 
+            this.btnSave.Click += new EventHandler(this.btnSave_Click);
+            buttonPanel.Controls.Add(this.btnSave);
+
+            mainLayout.Controls.Add(buttonPanel, 0, 6); // Buttons at the bottom
+            mainLayout.SetColumnSpan(buttonPanel, 2);
+
+            this.Controls.Add(mainLayout);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -163,7 +155,7 @@ namespace HMS
         {
             if (string.IsNullOrWhiteSpace(txtRoomNumber.Text) || cmbRoomType.SelectedIndex == -1 || cmbStatus.SelectedIndex == -1)
             {
-                MessageBox.Show("Please fill in all required fields.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Please fill in all required fields.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 

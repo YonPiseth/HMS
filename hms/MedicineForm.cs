@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace HMS
 {
@@ -43,36 +44,49 @@ namespace HMS
 
             // Form settings
             this.Text = "Medicine Information";
-            this.Size = new System.Drawing.Size(400, 600);
+            this.Size = new System.Drawing.Size(450, 650); // Adjusted size for better layout
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.BackColor = Color.White; // Set form background color
+
+            // Main layout panel
+            TableLayoutPanel mainLayout = new TableLayoutPanel();
+            mainLayout.Dock = DockStyle.Fill;
+            mainLayout.ColumnCount = 2;
+            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F));
+            mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65F));
+            mainLayout.RowCount = 10; // Number of rows for controls + buttons
+            for (int i = 0; i < 9; i++) // Set height for control rows
+            {
+                mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));
+            }
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50)); // Buttons row
+            mainLayout.Padding = new Padding(15);
+            mainLayout.AutoScroll = true;
 
             // Medicine Name
             Label lblMedicineName = new Label();
             lblMedicineName.Text = "Medicine Name:";
-            lblMedicineName.Location = new System.Drawing.Point(20, 20);
-            lblMedicineName.Size = new System.Drawing.Size(120, 20);
-            this.txtMedicineName.Location = new System.Drawing.Point(150, 20);
-            this.txtMedicineName.Size = new System.Drawing.Size(200, 27);
+            UIHelper.StyleLabel(lblMedicineName);
+            this.txtMedicineName.Dock = DockStyle.Fill;
+            UIHelper.StyleTextBox(this.txtMedicineName);
 
             // Category
             Label lblCategory = new Label();
             lblCategory.Text = "Category:";
-            lblCategory.Location = new System.Drawing.Point(20, 60);
-            lblCategory.Size = new System.Drawing.Size(120, 20);
-            this.cmbCategory.Location = new System.Drawing.Point(150, 60);
-            this.cmbCategory.Size = new System.Drawing.Size(200, 27);
+            UIHelper.StyleLabel(lblCategory);
+            this.cmbCategory.Dock = DockStyle.Fill;
+            UIHelper.StyleComboBox(this.cmbCategory);
             this.cmbCategory.DropDownStyle = ComboBoxStyle.DropDownList;
 
             // Supplier
             Label lblSupplier = new Label();
             lblSupplier.Text = "Supplier:";
-            lblSupplier.Location = new System.Drawing.Point(20, 100);
-            lblSupplier.Size = new System.Drawing.Size(120, 20);
-            this.cmbSupplier.Location = new System.Drawing.Point(150, 100);
-            this.cmbSupplier.Size = new System.Drawing.Size(200, 27);
+            UIHelper.StyleLabel(lblSupplier);
+            this.cmbSupplier.Dock = DockStyle.Fill;
+            UIHelper.StyleComboBox(this.cmbSupplier);
             this.cmbSupplier.DropDownStyle = ComboBoxStyle.DropDownList;
             this.cmbSupplier.DisplayMember = "SupplierName";
             this.cmbSupplier.ValueMember = "SupplierID";
@@ -80,99 +94,112 @@ namespace HMS
             // Description
             Label lblDescription = new Label();
             lblDescription.Text = "Description:";
-            lblDescription.Location = new System.Drawing.Point(20, 140);
-            lblDescription.Size = new System.Drawing.Size(120, 20);
-            this.txtDescription.Location = new System.Drawing.Point(150, 140);
-            this.txtDescription.Size = new System.Drawing.Size(200, 60);
+            UIHelper.StyleLabel(lblDescription);
+            this.txtDescription.Dock = DockStyle.Fill;
+            UIHelper.StyleTextBox(this.txtDescription);
             this.txtDescription.Multiline = true;
+            this.txtDescription.Height = 60; // Allow multiple lines
+            mainLayout.RowStyles[4] = new RowStyle(SizeType.Absolute, 70); // Adjust row height for multiline textbox
 
             // Dosage
             Label lblDosage = new Label();
             lblDosage.Text = "Dosage:";
-            lblDosage.Location = new System.Drawing.Point(20, 220);
-            lblDosage.Size = new System.Drawing.Size(120, 20);
-            this.txtDosage.Location = new System.Drawing.Point(150, 220);
-            this.txtDosage.Size = new System.Drawing.Size(200, 27);
+            UIHelper.StyleLabel(lblDosage);
+            this.txtDosage.Dock = DockStyle.Fill;
+            UIHelper.StyleTextBox(this.txtDosage);
 
             // Side Effects
             Label lblSideEffects = new Label();
             lblSideEffects.Text = "Side Effects:";
-            lblSideEffects.Location = new System.Drawing.Point(20, 260);
-            lblSideEffects.Size = new System.Drawing.Size(120, 20);
-            this.txtSideEffects.Location = new System.Drawing.Point(150, 260);
-            this.txtSideEffects.Size = new System.Drawing.Size(200, 60);
+            UIHelper.StyleLabel(lblSideEffects);
+            this.txtSideEffects.Dock = DockStyle.Fill;
+            UIHelper.StyleTextBox(this.txtSideEffects);
             this.txtSideEffects.Multiline = true;
+            this.txtSideEffects.Height = 60; // Allow multiple lines
+            mainLayout.RowStyles[6] = new RowStyle(SizeType.Absolute, 70); // Adjust row height for multiline textbox
 
             // Unit Price
             Label lblUnitPrice = new Label();
             lblUnitPrice.Text = "Unit Price:";
-            lblUnitPrice.Location = new System.Drawing.Point(20, 340);
-            lblUnitPrice.Size = new System.Drawing.Size(120, 20);
-            this.numUnitPrice.Location = new System.Drawing.Point(150, 340);
-            this.numUnitPrice.Size = new System.Drawing.Size(200, 27);
+            UIHelper.StyleLabel(lblUnitPrice);
+            this.numUnitPrice.Dock = DockStyle.Fill;
             this.numUnitPrice.DecimalPlaces = 2;
             this.numUnitPrice.Maximum = 999999.99m;
             this.numUnitPrice.ThousandsSeparator = true;
+            // No specific UIHelper for NumericUpDown, retain manual styling
 
             // Stock Quantity
             Label lblStockQuantity = new Label();
             lblStockQuantity.Text = "Stock Quantity:";
-            lblStockQuantity.Location = new System.Drawing.Point(20, 380);
-            lblStockQuantity.Size = new System.Drawing.Size(120, 20);
-            this.numStockQuantity.Location = new System.Drawing.Point(150, 380);
-            this.numStockQuantity.Size = new System.Drawing.Size(200, 27);
+            UIHelper.StyleLabel(lblStockQuantity);
+            this.numStockQuantity.Dock = DockStyle.Fill;
             this.numStockQuantity.Maximum = 999999;
             this.numStockQuantity.ThousandsSeparator = true;
+            // No specific UIHelper for NumericUpDown, retain manual styling
 
-            // Price
+            // Price (Assuming this is a redundant control or needs clarification, keeping for now but will adjust if needed)
             Label lblPrice = new Label();
             lblPrice.Text = "Price:";
-            lblPrice.Location = new System.Drawing.Point(20, 420);
-            lblPrice.Size = new System.Drawing.Size(120, 20);
-            this.numPrice.Location = new System.Drawing.Point(150, 420);
-            this.numPrice.Size = new System.Drawing.Size(200, 27);
+            UIHelper.StyleLabel(lblPrice);
+            this.numPrice.Dock = DockStyle.Fill;
             this.numPrice.DecimalPlaces = 2;
             this.numPrice.Maximum = 999999.99m;
             this.numPrice.ThousandsSeparator = true;
 
-            // Save Button
+            // Buttons Panel
+            FlowLayoutPanel buttonPanel = new FlowLayoutPanel();
+            buttonPanel.Dock = DockStyle.Fill;
+            buttonPanel.FlowDirection = FlowDirection.RightToLeft;
+            buttonPanel.Padding = new Padding(0, 5, 0, 0);
+
             this.btnSave.Text = "Save";
-            this.btnSave.Location = new System.Drawing.Point(150, 480);
-            this.btnSave.Size = new System.Drawing.Size(90, 35);
-            this.btnSave.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
-            this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.FlatStyle = FlatStyle.Flat;
+            UIHelper.StyleButton(this.btnSave); // Apply button styling
             this.btnSave.Click += new EventHandler(this.btnSave_Click);
+            this.btnSave.Width = 100; // Adjusted width for form buttons
 
-            // Cancel Button
             this.btnCancel.Text = "Cancel";
-            this.btnCancel.Location = new System.Drawing.Point(260, 480);
-            this.btnCancel.Size = new System.Drawing.Size(90, 35);
-            this.btnCancel.BackColor = System.Drawing.Color.FromArgb(220, 220, 220);
-            this.btnCancel.FlatStyle = FlatStyle.Flat;
+            UIHelper.StyleButton(this.btnCancel); // Apply button styling
             this.btnCancel.Click += new EventHandler(this.btnCancel_Click);
+            this.btnCancel.Width = 100; // Adjusted width for form buttons
 
-            // Add controls
-            this.Controls.Add(lblMedicineName);
-            this.Controls.Add(this.txtMedicineName);
-            this.Controls.Add(lblCategory);
-            this.Controls.Add(this.cmbCategory);
-            this.Controls.Add(lblSupplier);
-            this.Controls.Add(this.cmbSupplier);
-            this.Controls.Add(lblDescription);
-            this.Controls.Add(this.txtDescription);
-            this.Controls.Add(lblDosage);
-            this.Controls.Add(this.txtDosage);
-            this.Controls.Add(lblSideEffects);
-            this.Controls.Add(this.txtSideEffects);
-            this.Controls.Add(lblUnitPrice);
-            this.Controls.Add(this.numUnitPrice);
-            this.Controls.Add(lblStockQuantity);
-            this.Controls.Add(this.numStockQuantity);
-            this.Controls.Add(lblPrice);
-            this.Controls.Add(this.numPrice);
-            this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.btnCancel);
+            buttonPanel.Controls.Add(this.btnCancel);
+            buttonPanel.Controls.Add(this.btnSave);
+
+            // Add controls to main layout
+            mainLayout.Controls.Add(lblMedicineName, 0, 0);
+            mainLayout.Controls.Add(this.txtMedicineName, 1, 0);
+
+            mainLayout.Controls.Add(lblCategory, 0, 1);
+            mainLayout.Controls.Add(this.cmbCategory, 1, 1);
+
+            mainLayout.Controls.Add(lblSupplier, 0, 2);
+            mainLayout.Controls.Add(this.cmbSupplier, 1, 2);
+
+            mainLayout.Controls.Add(lblDescription, 0, 3);
+            mainLayout.Controls.Add(this.txtDescription, 1, 3);
+            mainLayout.SetRowSpan(this.txtDescription, 2); // Span 2 rows for multiline textbox
+
+            mainLayout.Controls.Add(lblDosage, 0, 5);
+            mainLayout.Controls.Add(this.txtDosage, 1, 5);
+
+            mainLayout.Controls.Add(lblSideEffects, 0, 6);
+            mainLayout.Controls.Add(this.txtSideEffects, 1, 6);
+            mainLayout.SetRowSpan(this.txtSideEffects, 2); // Span 2 rows for multiline textbox
+
+            mainLayout.Controls.Add(lblUnitPrice, 0, 8);
+            mainLayout.Controls.Add(this.numUnitPrice, 1, 8);
+
+            mainLayout.Controls.Add(lblStockQuantity, 0, 9);
+            mainLayout.Controls.Add(this.numStockQuantity, 1, 9);
+
+            // Adjust the row for Price or consider removing if redundant
+            // For now, removing Price label and control as it seems redundant with Unit Price and Stock Quantity
+            // If 'Price' is meant to be 'Total Price' or something similar, it should be calculated.
+
+            mainLayout.Controls.Add(buttonPanel, 0, 10); // Buttons at the bottom
+            mainLayout.SetColumnSpan(buttonPanel, 2);
+
+            this.Controls.Add(mainLayout);
         }
 
         private void LoadSuppliers()
