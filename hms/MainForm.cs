@@ -5,27 +5,8 @@ using System.Drawing;
 
 namespace HMS
 {
-    public class MainForm : Form
+    public partial class MainForm : Form
     {
-        private DoctorControl doctorControl;
-        private PatientControl patientControl;
-        private AppointmentControl appointmentControl;
-        private RoomControl roomControl;
-        private InvoiceControl invoiceControl;
-        private DiseaseControl diseaseControl;
-        private SupplierControl supplierControl;
-        private MedicineControl medicineControl;
-        private BillingControl billingControl;
-
-        private Button btnDoctors;
-        private Button btnPatients;
-        private Button btnAppointments;
-        private Button btnRooms;
-        private Button btnInvoices;
-        private Button btnDiseases;
-        private Button btnSuppliers;
-        private Button btnMedicines;
-        private Button btnBilling;
         private Panel contentPanel;
         private Panel navPanel;
         private string userRole;
@@ -36,116 +17,6 @@ namespace HMS
             userRole = role;
             userID = id;
             InitializeComponent();
-        }
-
-        private void InitializeComponent()
-        {
-            try
-            {
-                this.Text = "Hospital Management System";
-                this.Size = new Size(1200, 750); // Adjusted size for more content
-                this.StartPosition = FormStartPosition.CenterScreen;
-                this.MinimumSize = new Size(1000, 600);
-                this.BackColor = Color.White;
-
-                // Main layout panel for the entire form
-                TableLayoutPanel mainLayout = new TableLayoutPanel
-                {
-                    Dock = DockStyle.Fill,
-                    ColumnCount = 2,
-                    RowCount = 1,
-                    ColumnStyles = { new ColumnStyle(SizeType.Absolute, 220), new ColumnStyle(SizeType.Percent, 100F) },
-                    RowStyles = { new RowStyle(SizeType.Percent, 100F) },
-                    Padding = new Padding(0)
-                };
-                this.Controls.Add(mainLayout);
-
-                // Content panel (always exists)
-                contentPanel = new Panel
-                {
-                    Dock = DockStyle.Fill,
-                    BackColor = System.Drawing.Color.White,
-                    Padding = new Padding(15) // Add padding to the content area
-                };
-
-                // Show default control based on user role
-                if (userRole == "Patient")
-                {
-                    // Patient view is full screen, no nav panel
-                    mainLayout.ColumnStyles[0] = new ColumnStyle(SizeType.Absolute, 0); // Collapse nav column
-                    mainLayout.Controls.Add(contentPanel, 0, 0);
-                    mainLayout.SetColumnSpan(contentPanel, 2); // Span both columns
-                    ShowPatientView();
-                }
-                else // Non-patient roles (e.g., Admin)
-                {
-                    // Navigation panel
-                    this.navPanel = new Panel
-                    {
-                        Dock = DockStyle.Fill,
-                        BackColor = Color.FromArgb(24, 33, 54), // Dark blue/grey background for nav
-                        Padding = new Padding(0, 20, 0, 0) // Padding at the top for spacing
-                    };
-                    mainLayout.Controls.Add(this.navPanel, 0, 0); // Add nav panel to the first column
-                    mainLayout.Controls.Add(contentPanel, 1, 0); // Add content panel to the second column
-
-                    // Create navigation buttons dynamically and apply styles
-                    string[] buttonNames = {
-                        "Patients", "Doctors", "Appointments", "Rooms",
-                        "Invoices", "Diseases", "Suppliers", "Medicines", "Billing"
-                    };
-
-                    foreach (string name in buttonNames)
-                    {
-                        Button btn = new Button();
-                        btn.Text = name;
-                        UIHelper.StyleButton(btn); // Apply standard button style
-                        btn.Dock = DockStyle.Top;
-                        btn.TextAlign = ContentAlignment.MiddleLeft; // Align text to left
-                        btn.Padding = new Padding(20, 0, 0, 0); // Indent text
-                        btn.Height = 45; // Taller buttons
-                        btn.FlatAppearance.BorderSize = 0; // No border
-                        btn.BackColor = Color.FromArgb(24, 33, 54); // Override button color for nav panel
-                        btn.ForeColor = Color.White;
-                        btn.Font = new Font("Segoe UI", 11, FontStyle.Bold); // Slightly larger, bold font
-                        btn.Margin = new Padding(0, 0, 0, 5); // Add margin between buttons
-                        btn.Click += new EventHandler(Button_Click);
-
-                        // Assign to specific button variables for easier access if needed elsewhere
-                        switch (name)
-                        {
-                            case "Patients": btnPatients = btn; break;
-                            case "Doctors": btnDoctors = btn; break;
-                            case "Appointments": btnAppointments = btn; break;
-                            case "Rooms": btnRooms = btn; break;
-                            case "Invoices": btnInvoices = btn; break;
-                            case "Diseases": btnDiseases = btn; break;
-                            case "Suppliers": btnSuppliers = btn; break;
-                            case "Medicines": btnMedicines = btn; break;
-                            case "Billing": btnBilling = btn; break;
-                        }
-
-                        navPanel.Controls.Add(btn);
-                    }
-                    // Reverse the order of controls in the navPanel to make them appear top-to-bottom as added
-                    // (Buttons are added bottom-to-top with DockStyle.Top if not reversed)
-                    navPanel.Controls.SetChildIndex(btnBilling, 0);
-                    navPanel.Controls.SetChildIndex(btnMedicines, 1);
-                    navPanel.Controls.SetChildIndex(btnSuppliers, 2);
-                    navPanel.Controls.SetChildIndex(btnDiseases, 3);
-                    navPanel.Controls.SetChildIndex(btnInvoices, 4);
-                    navPanel.Controls.SetChildIndex(btnRooms, 5);
-                    navPanel.Controls.SetChildIndex(btnAppointments, 6);
-                    navPanel.Controls.SetChildIndex(btnDoctors, 7);
-                    navPanel.Controls.SetChildIndex(btnPatients, 8);
-
-                    ShowControl(new PatientControl()); // Default view for admin
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error initializing main form: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
         private void ShowPatientDetails()
@@ -371,12 +242,14 @@ namespace HMS
             {
                 if (control is Button navButton)
                 {
-                    navButton.BackColor = Color.FromArgb(24, 33, 54); // Default nav color
+                    navButton.BackColor = Color.White; // Default nav color (white)
+                    navButton.ForeColor = Color.Black; // Default font color (black)
                 }
             }
 
             // Set background of clicked button
-            clickedButton.BackColor = Color.FromArgb(0, 120, 215); // Highlight selected button
+            clickedButton.BackColor = Color.Gainsboro; // Light gray highlight
+            clickedButton.ForeColor = Color.Black;
 
             // Show corresponding control
             switch (clickedButton.Text)

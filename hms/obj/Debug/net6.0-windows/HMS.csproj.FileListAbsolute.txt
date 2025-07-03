@@ -63,3 +63,12 @@ D:\HMS Git\HMS\hms\obj\Debug\net6.0-windows\refint\HMS.dll
 D:\HMS Git\HMS\hms\obj\Debug\net6.0-windows\HMS.pdb
 D:\HMS Git\HMS\hms\obj\Debug\net6.0-windows\HMS.genruntimeconfig.cache
 D:\HMS Git\HMS\hms\obj\Debug\net6.0-windows\ref\HMS.dll
+D:\HMS Git\hms\hms\bin\Debug\net6.0-windows\Image\appointment.png
+D:\HMS Git\hms\hms\bin\Debug\net6.0-windows\Image\bill.png
+D:\HMS Git\hms\hms\bin\Debug\net6.0-windows\Image\doctor.png
+D:\HMS Git\hms\hms\bin\Debug\net6.0-windows\Image\invoice.png
+D:\HMS Git\hms\hms\bin\Debug\net6.0-windows\Image\patient.png
+D:\HMS Git\hms\hms\bin\Debug\net6.0-windows\Image\Room.png
+D:\HMS Git\hms\hms\bin\Debug\net6.0-windows\Image\diseases.png
+D:\HMS Git\hms\hms\bin\Debug\net6.0-windows\Image\medicine.png
+D:\HMS Git\hms\hms\bin\Debug\net6.0-windows\Image\supplier.png
