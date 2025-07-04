@@ -14,38 +14,47 @@ static class Program
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
 
-        // Show login form
-        using (var loginForm = new LoginForm())
+        while (true)
         {
-            if (loginForm.ShowDialog() == DialogResult.OK)
+            using (var loginForm = new LoginForm())
             {
-                // If login is successful, show splash screen, then run the main form
-                try
+                if (loginForm.ShowDialog() == DialogResult.OK)
                 {
-                    using (var splashForm = new SplashForm())
+                    // If login is successful, show splash screen, then run the main form
+                    try
                     {
-                        splashForm.ShowDialog();
+                        using (var splashForm = new SplashForm())
+                        {
+                            splashForm.ShowDialog();
+                        }
                     }
-                }
-                catch (Exception splashEx)
-                {
-                    MessageBox.Show("Error showing splash screen: " + splashEx.Message, "Splash Screen Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return; // Exit if splash screen fails
-                }
+                    catch (Exception splashEx)
+                    {
+                        MessageBox.Show("Error showing splash screen: " + splashEx.Message, "Splash Screen Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return; // Exit if splash screen fails
+                    }
 
-                try
-                {
-                    using (var mainForm = new MainForm(loginForm.UserRole, loginForm.UserID))
+                    try
                     {
-                        Application.Run(mainForm);
+                        using (var mainForm = new MainForm(loginForm.UserRole, loginForm.UserID))
+                        {
+                            Application.Run(mainForm);
+                            if (mainForm.IsLogout)
+                                continue; // Restart login after logout
+                            else
+                                break; // Exit if main form closed without logout
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error starting main form: " + ex.Message, "Application Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show("Error starting main form: " + ex.Message, "Application Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    break; // Exit if login is cancelled
                 }
             }
-            // If login is cancelled, the application will exit naturally after this block
         }
     }    
 }

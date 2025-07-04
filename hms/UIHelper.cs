@@ -35,16 +35,24 @@ namespace HMS
             // Adjust columns after data binding
             dgv.DataBindingComplete += (s, e) =>
             {
-                foreach (DataGridViewColumn col in dgv.Columns)
+                try
                 {
-                    // Set a minimum width for all columns
-                    if (col.Width < 120) col.Width = 120;
-                    // Make image columns larger
-                    if (col is DataGridViewImageColumn)
+                    if (dgv == null || dgv.IsDisposed || dgv.Columns == null || dgv.Columns.Count == 0)
+                        return;
+                    foreach (DataGridViewColumn col in dgv.Columns)
                     {
-                        col.Width = 120;
-                        ((DataGridViewImageColumn)col).ImageLayout = DataGridViewImageCellLayout.Zoom;
+                        if (col == null) continue;
+                        if (col.Width < 120) col.Width = 120;
+                        if (col is DataGridViewImageColumn)
+                        {
+                            col.Width = 120;
+                            ((DataGridViewImageColumn)col).ImageLayout = DataGridViewImageCellLayout.Zoom;
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    // Optionally log ex.ToString() for debugging
                 }
             };
         }

@@ -1,7 +1,48 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "D:\\HMS Git\\HMS\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|d:\\hms git\\hms\\hms\\image\\appointment.png||{58961B49-13E0-48C0-9258-13CBC4D40279}",
+      "RelativeMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|solutionrelative:hms\\image\\appointment.png||{58961B49-13E0-48C0-9258-13CBC4D40279}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|d:\\hms git\\hms\\hms\\image\\bill.png||{58961B49-13E0-48C0-9258-13CBC4D40279}",
+      "RelativeMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|solutionrelative:hms\\image\\bill.png||{58961B49-13E0-48C0-9258-13CBC4D40279}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|d:\\hms git\\hms\\hms\\image\\diseases.png||{58961B49-13E0-48C0-9258-13CBC4D40279}",
+      "RelativeMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|solutionrelative:hms\\image\\diseases.png||{58961B49-13E0-48C0-9258-13CBC4D40279}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|d:\\hms git\\hms\\hms\\image\\doctor.png||{58961B49-13E0-48C0-9258-13CBC4D40279}",
+      "RelativeMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|solutionrelative:hms\\image\\doctor.png||{58961B49-13E0-48C0-9258-13CBC4D40279}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|d:\\hms git\\hms\\hms\\image\\invoice.png||{58961B49-13E0-48C0-9258-13CBC4D40279}",
+      "RelativeMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|solutionrelative:hms\\image\\invoice.png||{58961B49-13E0-48C0-9258-13CBC4D40279}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|d:\\hms git\\hms\\hms\\image\\loading image.jpg||{58961B49-13E0-48C0-9258-13CBC4D40279}",
+      "RelativeMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|solutionrelative:hms\\image\\loading image.jpg||{58961B49-13E0-48C0-9258-13CBC4D40279}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|d:\\hms git\\hms\\hms\\image\\medicine.png||{58961B49-13E0-48C0-9258-13CBC4D40279}",
+      "RelativeMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|solutionrelative:hms\\image\\medicine.png||{58961B49-13E0-48C0-9258-13CBC4D40279}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|d:\\hms git\\hms\\hms\\image\\patient.png||{58961B49-13E0-48C0-9258-13CBC4D40279}",
+      "RelativeMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|solutionrelative:hms\\image\\patient.png||{58961B49-13E0-48C0-9258-13CBC4D40279}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|d:\\hms git\\hms\\hms\\image\\room.png||{58961B49-13E0-48C0-9258-13CBC4D40279}",
+      "RelativeMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|solutionrelative:hms\\image\\room.png||{58961B49-13E0-48C0-9258-13CBC4D40279}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|d:\\hms git\\hms\\hms\\image\\supplier.png||{58961B49-13E0-48C0-9258-13CBC4D40279}",
+      "RelativeMoniker": "D:0:0:{4B512681-B912-A9CF-1499-71CD728C7313}|hms\\HMS.csproj|solutionrelative:hms\\image\\supplier.png||{58961B49-13E0-48C0-9258-13CBC4D40279}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,7 +50,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -26,6 +67,126 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{e5c86464-96be-4d7c-9a8b-abcb3bbf5f92}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appointment.png",
+              "DocumentMoniker": "D:\\HMS Git\\HMS\\hms\\Image\\appointment.png",
+              "RelativeDocumentMoniker": "hms\\Image\\appointment.png",
+              "ToolTip": "D:\\HMS Git\\HMS\\hms\\Image\\appointment.png",
+              "RelativeToolTip": "hms\\Image\\appointment.png",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001533|",
+              "WhenOpened": "2025-07-03T11:12:26.397Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "bill.png",
+              "DocumentMoniker": "D:\\HMS Git\\HMS\\hms\\Image\\bill.png",
+              "RelativeDocumentMoniker": "hms\\Image\\bill.png",
+              "ToolTip": "D:\\HMS Git\\HMS\\hms\\Image\\bill.png",
+              "RelativeToolTip": "hms\\Image\\bill.png",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001533|",
+              "WhenOpened": "2025-07-03T11:12:24.443Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "diseases.png",
+              "DocumentMoniker": "D:\\HMS Git\\HMS\\hms\\Image\\diseases.png",
+              "RelativeDocumentMoniker": "hms\\Image\\diseases.png",
+              "ToolTip": "D:\\HMS Git\\HMS\\hms\\Image\\diseases.png",
+              "RelativeToolTip": "hms\\Image\\diseases.png",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001533|",
+              "WhenOpened": "2025-07-03T11:12:22.561Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "doctor.png",
+              "DocumentMoniker": "D:\\HMS Git\\HMS\\hms\\Image\\doctor.png",
+              "RelativeDocumentMoniker": "hms\\Image\\doctor.png",
+              "ToolTip": "D:\\HMS Git\\HMS\\hms\\Image\\doctor.png",
+              "RelativeToolTip": "hms\\Image\\doctor.png",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001533|",
+              "WhenOpened": "2025-07-03T11:12:20.67Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "invoice.png",
+              "DocumentMoniker": "D:\\HMS Git\\HMS\\hms\\Image\\invoice.png",
+              "RelativeDocumentMoniker": "hms\\Image\\invoice.png",
+              "ToolTip": "D:\\HMS Git\\HMS\\hms\\Image\\invoice.png",
+              "RelativeToolTip": "hms\\Image\\invoice.png",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001533|",
+              "WhenOpened": "2025-07-03T11:12:18.517Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Loading Image.jpg",
+              "DocumentMoniker": "D:\\HMS Git\\HMS\\hms\\Image\\Loading Image.jpg",
+              "RelativeDocumentMoniker": "hms\\Image\\Loading Image.jpg",
+              "ToolTip": "D:\\HMS Git\\HMS\\hms\\Image\\Loading Image.jpg",
+              "RelativeToolTip": "hms\\Image\\Loading Image.jpg",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001533|",
+              "WhenOpened": "2025-07-03T11:12:16.149Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "medicine.png",
+              "DocumentMoniker": "D:\\HMS Git\\HMS\\hms\\Image\\medicine.png",
+              "RelativeDocumentMoniker": "hms\\Image\\medicine.png",
+              "ToolTip": "D:\\HMS Git\\HMS\\hms\\Image\\medicine.png",
+              "RelativeToolTip": "hms\\Image\\medicine.png",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001533|",
+              "WhenOpened": "2025-07-03T11:12:15.294Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "patient.png",
+              "DocumentMoniker": "D:\\HMS Git\\HMS\\hms\\Image\\patient.png",
+              "RelativeDocumentMoniker": "hms\\Image\\patient.png",
+              "ToolTip": "D:\\HMS Git\\HMS\\hms\\Image\\patient.png",
+              "RelativeToolTip": "hms\\Image\\patient.png",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001533|",
+              "WhenOpened": "2025-07-03T11:12:13.366Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Room.png",
+              "DocumentMoniker": "D:\\HMS Git\\HMS\\hms\\Image\\Room.png",
+              "RelativeDocumentMoniker": "hms\\Image\\Room.png",
+              "ToolTip": "D:\\HMS Git\\HMS\\hms\\Image\\Room.png",
+              "RelativeToolTip": "hms\\Image\\Room.png",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001533|",
+              "WhenOpened": "2025-07-03T11:12:11.163Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "supplier.png",
+              "DocumentMoniker": "D:\\HMS Git\\HMS\\hms\\Image\\supplier.png",
+              "RelativeDocumentMoniker": "hms\\Image\\supplier.png",
+              "ToolTip": "D:\\HMS Git\\HMS\\hms\\Image\\supplier.png",
+              "RelativeToolTip": "hms\\Image\\supplier.png",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001533|",
+              "WhenOpened": "2025-07-03T11:12:07.15Z",
+              "EditorCaption": ""
             }
           ]
         }

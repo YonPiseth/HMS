@@ -321,8 +321,6 @@ namespace HMS
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
-            // Handle logout
-            // For a UserControl, you might raise an event or access the parent form
             if (this.ParentForm is MainForm mainForm)
             {
                 mainForm.Logout();

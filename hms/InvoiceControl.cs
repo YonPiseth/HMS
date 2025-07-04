@@ -288,8 +288,10 @@ namespace HMS
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
-            // Assuming main form handles logout
-            this.ParentForm.Close(); 
+            if (this.ParentForm is MainForm mainForm)
+            {
+                mainForm.Logout();
+            }
         }
 
         private void btnViewReceipts_Click(object sender, EventArgs e)

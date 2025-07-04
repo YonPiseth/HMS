@@ -2348,11 +2348,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\HMS Git\\hms\\hms\\HMS.csproj",
+      "projectUniqueName": "D:\\HMS Git\\HMS\\hms\\HMS.csproj",
       "projectName": "HMS",
-      "projectPath": "D:\\HMS Git\\hms\\hms\\HMS.csproj",
+      "projectPath": "D:\\HMS Git\\HMS\\hms\\HMS.csproj",
       "packagesPath": "C:\\Users\\Yon Piseth\\.nuget\\packages\\",
-      "outputPath": "D:\\HMS Git\\hms\\hms\\obj\\",
+      "outputPath": "D:\\HMS Git\\HMS\\hms\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Yon Piseth\\AppData\\Roaming\\NuGet\\NuGet.Config",

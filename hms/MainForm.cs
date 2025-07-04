@@ -12,6 +12,8 @@ namespace HMS
         private string userRole;
         private int userID;
 
+        public bool IsLogout { get; private set; } = false;
+
         public MainForm(string role, int id)
         {
             userRole = role;
@@ -226,10 +228,8 @@ namespace HMS
 
         public void Logout()
         {
-            this.Hide();
-            LoginForm loginForm = new LoginForm();
-            loginForm.Show();
-            this.Dispose();
+            IsLogout = true;
+            this.Close();
         }
 
         private void Button_Click(object sender, EventArgs e)

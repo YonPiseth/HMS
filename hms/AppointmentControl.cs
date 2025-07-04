@@ -306,9 +306,10 @@ namespace HMS
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
-            // This button might be redundant if the logout is handled by the MainForm
-            // For now, it could close the current control or trigger a main form event
-            MessageBox.Show("Logout functionality would be implemented here.", "Logout", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (this.ParentForm is MainForm mainForm)
+            {
+                mainForm.Logout();
+            }
         }
     }
 }

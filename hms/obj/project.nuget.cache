@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "fM/Z8YuxNfQ=",
+  "dgSpecHash": "XMwkO/7+CsI=",
   "success": true,
-  "projectFilePath": "D:\\HMS Git\\hms\\hms\\HMS.csproj",
+  "projectFilePath": "D:\\HMS Git\\HMS\\hms\\HMS.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Yon Piseth\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Yon Piseth\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

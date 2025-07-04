@@ -450,6 +450,20 @@ CREATE TABLE tblRoomMaintenance (
 );
 GO
 
+-- Create tblRoomType table
+CREATE TABLE tblRoomType (
+    RoomTypeID INT IDENTITY(1,1) PRIMARY KEY,
+    RoomTypeName NVARCHAR(100) NOT NULL,
+    IsDeleted BIT NOT NULL DEFAULT 0
+);
+
+-- Insert default room types
+INSERT INTO tblRoomType (RoomTypeName, IsDeleted) VALUES
+('Standard', 0),
+('Deluxe', 0),
+('ICU', 0),
+('Suite', 0);
+
 -- Insert sample data
 INSERT INTO tblUser (Username, Password, FullName, Role)
 VALUES ('admin', 'admin123', 'System Administrator', 'Admin');

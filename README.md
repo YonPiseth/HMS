@@ -1,50 +1,50 @@
-# Hospital Management System (HMS)
+# ប្រព័ន្ធគ្រប់គ្រងមន្ទីរពេទ្យ (HMS)
 
-## Overview
-The Hospital Management System (HMS) is a desktop application designed to manage hospital operations, including patient records, doctor appointments, room management, and billing. It provides a comprehensive solution for healthcare facilities to streamline their administrative and clinical processes.
+## សង្ខេប
+ប្រព័ន្ធគ្រប់គ្រងមន្ទីរពេទ្យ (HMS) គឺជាកម្មវិធី Desktop ដែលត្រូវបានរចនាឡើងសម្រាប់គ្រប់គ្រងប្រតិបត្តិការនានានៃមន្ទីរពេទ្យ រួមមាន កំណត់ត្រាអ្នកជំងឺ ការណាត់ជួបវេជ្ជបណ្ឌិត ការគ្រប់គ្រងបន្ទប់ និងវិក្កយបត្រ។ វាបានផ្តល់ដំណោះស្រាយពេញលេញសម្រាប់ស្ថាប័នសុខាភិបាល ដើម្បីធ្វើឲ្យដំណើរការរដ្ឋបាល និងវេជ្ជសាស្ត្ររបស់ពួកគេមានប្រសិទ្ធភាព។
 
-## Requirements
+## តម្រូវការប្រើប្រាស់
 
-### System Requirements
-- Windows 10 or later
-- .NET 6.0 Runtime or later
-- SQL Server 2019 or later (Express edition is supported)
-- Minimum 4GB RAM
-- 1GB free disk space
+### តម្រូវការប្រព័ន្ធ
+- Windows 10 ឬថ្មីជាងនេះ
+- .NET 6.0 Runtime ឬថ្មីជាងនេះ
+- SQL Server 2019 ឬថ្មីជាងនេះ (Express edition គាំទ្រ)
+- អង្គភាពចងចាំ (RAM) 4GB ឡើងទៅ
+- ទំហំថាសទំនេរ 1GB
 
-### Development Requirements
-- Visual Studio 2022 or later
+### តម្រូវការអភិវឌ្ឍន៍
+- Visual Studio 2022 ឬថ្មីជាងនេះ
 - .NET 6.0 SDK
-- SQL Server Management Studio (SSMS) or Azure Data Studio
-- Git (for version control)
+- SQL Server Management Studio (SSMS) ឬ Azure Data Studio
+- Git (សម្រាប់គ្រប់គ្រងកំណែ)
 
 ### NuGet Packages
 - Microsoft.Data.SqlClient (6.0.2)
 - System.Data.SqlClient (4.8.5)
 - System.Configuration.ConfigurationManager (6.0.0)
 
-## Database Setup
+## ការរៀបចំមូលដ្ឋានទិន្នន័យ
 
-### 1. SQL Server Installation
-- Download and install SQL Server (Express edition is free and sufficient for development)
-- During installation, ensure the following components are selected:
+### 1. ការតំឡើង SQL Server
+- ទាញយក និងតំឡើង SQL Server (Express edition គឺឥតគិតថ្លៃ និងគ្រប់គ្រាន់សម្រាប់អភិវឌ្ឍន៍)
+- នៅពេលតំឡើង សូមជ្រើសរើសបន្ថែម៖
   - Database Engine Services
   - SQL Server Management Studio (SSMS)
   - Client Tools Connectivity
 
-### 2. Database Creation
-1. Open SQL Server Management Studio (SSMS)
-2. Connect to your SQL Server instance
-3. Open the `create_hms_db.sql` file located in the `hms` directory
-4. Execute the script to:
-   - Create the HMS database
-   - Create all necessary tables
-   - Set up stored procedures
-   - Configure initial data
+### 2. បង្កើតមូលដ្ឋានទិន្នន័យ
+1. បើក SQL Server Management Studio (SSMS)
+2. តភ្ជាប់ទៅ SQL Server instance របស់អ្នក
+3. បើកឯកសារ `create_hms_db.sql` ដែលមាននៅក្នុងថត `hms`
+4. ប្រតិបត្តិស្គ្រីបដើម្បី៖
+   - បង្កើតមូលដ្ឋានទិន្នន័យ HMS
+   - បង្កើតតារាងទាំងអស់
+   - កំណត់ Stored Procedures
+   - កំណត់ទិន្នន័យដំបូង
 
-### 3. Database Configuration
-1. Open `App.config` in the project
-2. Update the connection string with your SQL Server details:
+### 3. ការកំណត់រចនាសម្ព័ន្ធមូលដ្ឋានទិន្នន័យ
+1. បើក `App.config` ក្នុងគម្រោង
+2. កែប្រែ Connection String ដូចខាងក្រោម៖
    ```xml
    <connectionStrings>
      <add name="HMSConnection" 
@@ -53,94 +53,94 @@ The Hospital Management System (HMS) is a desktop application designed to manage
    </connectionStrings>
    ```
 
-## Building and Running
+## ការសាងសង់ និងដំណើរការ
 
-### 1. Clone the Repository
+### 1. Clone Repository
 ```bash
 git clone https://github.com/yourusername/HMS.git
 cd HMS
 ```
 
-### 2. Build the Project
+### 2. Build Project
 ```bash
 cd hms
 dotnet build
 ```
 
-### 3. Run the Application
+### 3. Run Application
 ```bash
 dotnet run
 ```
 
-## Features
+## លក្ខណៈពិសេស
 
-### Patient Management
-- Add, edit, and delete patient records
-- Upload and manage patient documents
-- Track patient medical history
-- Manage patient insurance information
+### ការគ្រប់គ្រងអ្នកជំងឺ
+- បន្ថែម កែប្រែ និងលុបកំណត់ត្រាអ្នកជំងឺ
+- ផ្ទុក និងគ្រប់គ្រងឯកសារអ្នកជំងឺ
+- តាមដានប្រវត្តិវេជ្ជសាស្ត្រអ្នកជំងឺ
+- គ្រប់គ្រងព័ត៌មានធានារ៉ាប់រងរបស់អ្នកជំងឺ
 
-### Doctor Management
-- Maintain doctor profiles with specialization
-- Track doctor schedules and availability
-- Manage doctor qualifications and experience
-- Upload and manage doctor profile photos
+### ការគ្រប់គ្រងវេជ្ជបណ្ឌិត
+- រក្សាទុកប្រវត្តិរូបវេជ្ជបណ្ឌិតជាមួយជំនាញ
+- តាមដានកាលវិភាគ និងភាពមានស្រាប់របស់វេជ្ជបណ្ឌិត
+- គ្រប់គ្រងគុណវុឌ្ឍិ និងបទពិសោធន៍វេជ្ជបណ្ឌិត
+- ផ្ទុក និងគ្រប់គ្រងរូបថតវេជ្ជបណ្ឌិត
 
-### Appointment Scheduling
-- Schedule patient appointments
-- Set appointment priorities
-- Manage follow-up appointments
-- Send appointment reminders
+### ការកំណត់ពេលវេលាជួប
+- កំណត់ពេលវេលាជួបអ្នកជំងឺ
+- កំណត់អាទិភាពការណាត់ជួប
+- គ្រប់គ្រងការណាត់ជួបបន្ត
+- ផ្ញើការរំលឹកការណាត់ជួប
 
-### Room Management
-- Track room availability
-- Manage room types and rates
-- Schedule room maintenance
-- Handle room allocations
+### ការគ្រប់គ្រងបន្ទប់
+- តាមដានភាពមានស្រាប់នៃបន្ទប់
+- គ្រប់គ្រងប្រភេទបន្ទប់ និងតម្លៃ
+- កំណត់កាលវិភាគថែទាំបន្ទប់
+- គ្រប់គ្រងការបែងចែកបន្ទប់
 
-### Billing and Invoicing
-- Generate patient bills
-- Track payments
-- Manage insurance claims
-- Generate financial reports
+### វិក្កយបត្រ និងវិក្កយបត្រ
+- បង្កើតវិក្កយបត្រអ្នកជំងឺ
+- តាមដានការទូទាត់
+- គ្រប់គ្រងការទាមទារធានារ៉ាប់រង
+- បង្កើតរបាយការណ៍ហិរញ្ញវត្ថុ
 
-### Medicine Management
-- Track medicine inventory
-- Manage medicine categories
-- Record medicine usage
-- Generate prescription reports
+### ការគ្រប់គ្រងថ្នាំ
+- តាមដានស្តុកថ្នាំ
+- គ្រប់គ្រងប្រភេទថ្នាំ
+- កត់ត្រាការប្រើប្រាស់ថ្នាំ
+- បង្កើតរបាយការណ៍វេជ្ជបញ្ជា
 
-## Troubleshooting
+## ការដោះស្រាយបញ្ហា
 
-### Common Issues
+### បញ្ហាទូទៅ
 
 1. **Database Connection Error**
-   - Verify SQL Server is running
-   - Check connection string in App.config
-   - Ensure Windows Authentication is enabled
+   - ពិនិត្យមើលថា SQL Server កំពុងដំណើរការ
+   - ពិនិត្យ Connection String ក្នុង App.config
+   - ប្រាកដថា Windows Authentication បានបើក
 
 2. **Image Upload Issues**
-   - Ensure sufficient disk space
-   - Check file permissions
-   - Verify image format (PNG/JPG supported)
+   - ពិនិត្យថាមានទំហំថាសគ្រប់គ្រាន់
+   - ពិនិត្យសិទ្ធិឯកសារ
+   - ប្រាកដថា Image Format គឺ PNG/JPG
 
 3. **Application Crashes**
-   - Check Windows Event Viewer for errors
-   - Verify .NET Runtime is installed
-   - Ensure all NuGet packages are restored
+   - ពិនិត្យ Windows Event Viewer សម្រាប់កំហុស
+   - ពិនិត្យថា .NET Runtime ត្រូវបានដំឡើង
+   - ប្រាកដថា NuGet packages ទាំងអស់ត្រូវបាន Restore
 
-### Support
-For additional support:
-1. Check the [Issues](https://github.com/yourusername/HMS/issues) section
-2. Create a new issue with detailed error information
-3. Contact the development team
+### ជំនួយបន្ថែម
+សម្រាប់ជំនួយបន្ថែម៖
+1. ពិនិត្យផ្នែក [Issues](https://github.com/yourusername/HMS/issues)
+2. បង្កើត Issue ថ្មីជាមួយព័ត៌មានកំហុសលម្អិត
+3. ទាក់ទងក្រុមអភិវឌ្ឍន៍
 
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+## អាជ្ញាប័ណ្ណ
+គម្រោងនេះមានអាជ្ញាប័ណ្ណ MIT។ សូមមើលឯកសារ LICENSE សម្រាប់ព័ត៌មានលម្អិត។
 
-## Contributing
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request 
+## ការចូលរួម
+1. Fork repository
+2. បង្កើត feature branch
+3. Commit ការផ្លាស់ប្តូររបស់អ្នក
+4. Push ទៅ branch
+5. បង្កើត Pull Request 

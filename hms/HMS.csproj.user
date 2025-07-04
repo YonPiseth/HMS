@@ -1,4 +1,77 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup />
+  <ItemGroup>
+    <Compile Update="AppointmentControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="AppointmentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="BillingControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="BillingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="DiseaseControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="DiseaseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="DoctorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="DoctorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InvoiceControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="InvoiceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="InvoiceReceiptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="MedicineControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="MedicineForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PatientControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="PatientForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PatientInvoiceHistoryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="PatientRegistrationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="RoomControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="RoomForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="SplashForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="SupplierControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="SupplierForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
 </Project>

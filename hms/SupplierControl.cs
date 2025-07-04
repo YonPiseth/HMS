@@ -206,8 +206,10 @@ namespace HMS
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
-            // Log out (to be implemented)
-            MessageBox.Show("Log Out clicked");
+            if (this.ParentForm is MainForm mainForm)
+            {
+                mainForm.Logout();
+            }
         }
     }
 } 

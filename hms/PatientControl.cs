@@ -201,26 +201,7 @@ namespace HMS
             var form = new PatientForm();
             if (form.ShowDialog() == DialogResult.OK)
             {
-                using (SqlConnection con = new SqlConnection(connectionString))
-                {
-                    string query = @"INSERT INTO tblPatient (FirstName, LastName, DateOfBirth, Gender, BloodType, ContactNumber, Email, Address, InsuranceNumber, PatientFamily, Status, ProfilePhoto, IsDeleted) 
-                                   VALUES (@FirstName, @LastName, @DateOfBirth, @Gender, @BloodType, @ContactNumber, @Email, @Address, @InsuranceNumber, @Family, @Status, @ProfilePhoto, 0)";
-                    SqlCommand cmd = new SqlCommand(query, con);
-                    cmd.Parameters.AddWithValue("@FirstName", form.txtFirstName.Text);
-                    cmd.Parameters.AddWithValue("@LastName", form.txtLastName.Text);
-                    cmd.Parameters.AddWithValue("@DateOfBirth", form.dtpDateOfBirth.Value);
-                    cmd.Parameters.AddWithValue("@Gender", form.cmbGender.Text);
-                    cmd.Parameters.AddWithValue("@BloodType", form.cmbBloodType.Text);
-                    cmd.Parameters.AddWithValue("@ContactNumber", form.txtContactNumber.Text);
-                    cmd.Parameters.AddWithValue("@Email", form.txtEmail.Text);
-                    cmd.Parameters.AddWithValue("@Address", form.txtAddress.Text);
-                    cmd.Parameters.AddWithValue("@InsuranceNumber", form.txtInsuranceNumber.Text);
-                    cmd.Parameters.AddWithValue("@Family", form.txtFamily.Text);
-                    cmd.Parameters.AddWithValue("@Status", form.cmbStatus.Text);
-                    cmd.Parameters.AddWithValue("@ProfilePhoto", (object)ImageToByteArray(form.picPhoto.Image) ?? DBNull.Value);
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                }
+                // Only reload patients and show success message; do not insert again here
                 LoadPatients();
                 MessageBox.Show("Patient added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -295,9 +276,10 @@ namespace HMS
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
-            // This button might be redundant if the logout is handled by the MainForm
-            // For now, it could close the current control or trigger a main form event
-            MessageBox.Show("Logout functionality would be implemented here.", "Logout", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (this.ParentForm is MainForm mainForm)
+            {
+                mainForm.Logout();
+            }
         }
     }
 }
