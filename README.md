@@ -280,12 +280,6 @@ HMS/
 
 ---
 
-## 📸 Screenshots
-
-> **Note**: Add screenshots of your application here (login screen, main dashboard, patient management, etc.)
-
----
-
 ## 🔧 Troubleshooting
 
 ### Common Issues
