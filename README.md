@@ -17,7 +17,7 @@ A comprehensive Windows Forms application developed in C# for managing hospital 
 
 ## 📋 Table of Contents
 
-- [Project Description](#project-description)
+- [Project Description](#📝-project-description)
 - [Features](#features)
 - [Technologies Used](#technologies-used)
 - [Prerequisites](#prerequisites)
