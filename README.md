@@ -331,7 +331,7 @@ Contributions are welcome! Please follow these steps:
 
 ## 📄 License
 
-This project is licensed under **Group 2** - see the LICENSE file for details.
+This project is licensed under **Group 2** @RUPP Year4 Gen26 A1
 
 ---
 
