@@ -142,26 +142,19 @@ Before you begin, ensure you have the following installed:
 
 ## 💾 Database Setup
 
-1. **Configure Database Connection** ⚠️ **IMPORTANT**
-   - **Before running the database script**, you need to configure your SQL Server connection
-   - Open `HMS/App.config` in the project
-   - Update the connection string to match your SQL Server instance (see [Configuration](#-configuration) section below)
-   - The default connection string uses `.\SQLEXPRESS` - change this if your SQL Server instance is different
+1. **Configure Database Connection** ⚠️ **First**
+   - Update the connection string in `HMS/App.config` (see [Configuration](#-configuration) section)
+   - The default uses `.\SQLEXPRESS` - change if your SQL Server instance is different
 
-2. **Open SQL Server Management Studio (SSMS)**
-   - Launch SSMS and connect to your SQL Server instance
-   - Default instance: `.\SQLEXPRESS` or `(localdb)\MSSQLLocalDB`
-
-3. **Run the Database Script**
-   - Open the file: `HMS/create_hms_db.sql`
-   - Review the script (it will drop and recreate the database)
-   - Execute the entire script (Press `F5` or click Execute)
+2. **Run the Database Script**
+   - Open SQL Server Management Studio (SSMS)
+   - Connect to your SQL Server instance
+   - Open and execute `HMS/create_hms_db.sql` (Press `F5`)
    - Wait for the script to complete successfully
 
-4. **Verify Database Creation**
-   - Check that the `HMS` database exists in your SQL Server
-   - Verify that all tables are created (tblUser, tblPatient, tblDoctor, etc.)
-   - Check that initial data is populated (especially user accounts)
+3. **Verify Database Creation**
+   - Check that the `HMS` database exists with all tables created
+   - Verify initial data is populated (user accounts, etc.)
 
 ---
 
@@ -169,19 +162,9 @@ Before you begin, ensure you have the following installed:
 
 ### Database Connection String
 
-**⚠️ REQUIRED: You must configure the database connection string before running the application.**
+**⚠️ REQUIRED: Configure your SQL Server connection before running the application.**
 
-The application reads the database connection from `HMS/App.config`. You need to update this file to match your SQL Server setup.
-
-#### How to Change the Connection String:
-
-1. **Locate the Configuration File**
-   - Navigate to the `HMS` folder in your project
-   - Open `App.config` in a text editor or Visual Studio
-
-2. **Find the Connection String Section**
-   - Look for the `<connectionStrings>` section in the file
-   - It should look like this:
+Update the connection string in `HMS/App.config` to match your SQL Server instance:
 
 ```xml
 <connectionStrings>
@@ -191,65 +174,19 @@ The application reads the database connection from `HMS/App.config`. You need to
 </connectionStrings>
 ```
 
-3. **Update the Connection String**
-   - Change the `Data Source` value to match your SQL Server instance
-   - The `Data Source` is the part that specifies which SQL Server to connect to
+**Change the `Data Source` value based on your SQL Server setup:**
+- `.\SQLEXPRESS` - SQL Server Express (default)
+- `(localdb)\MSSQLLocalDB` - LocalDB
+- `localhost` - Default SQL Server instance
+- `ServerName\InstanceName` - Named instance
+- `IPAddress,Port` - Remote server (e.g., `192.168.1.100,1433`)
 
-#### Connection String Examples:
-
-**For SQL Server Express (Default):**
-```xml
-connectionString="Data Source=.\SQLEXPRESS;Initial Catalog=HMS;Integrated Security=True;TrustServerCertificate=True;"
-```
-
-**For SQL Server LocalDB:**
-```xml
-connectionString="Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=HMS;Integrated Security=True;TrustServerCertificate=True;"
-```
-
-**For SQL Server Default Instance:**
-```xml
-connectionString="Data Source=localhost;Initial Catalog=HMS;Integrated Security=True;TrustServerCertificate=True;"
-```
-
-**For SQL Server Named Instance:**
-```xml
-connectionString="Data Source=YourServerName\YourInstanceName;Initial Catalog=HMS;Integrated Security=True;TrustServerCertificate=True;"
-```
-
-**For SQL Server with SQL Authentication (Username/Password):**
+**For SQL Authentication** (instead of Windows Authentication), change to:
 ```xml
 connectionString="Data Source=.\SQLEXPRESS;Initial Catalog=HMS;User ID=YourUsername;Password=YourPassword;TrustServerCertificate=True;"
 ```
 
-**For Remote SQL Server:**
-```xml
-connectionString="Data Source=192.168.1.100,1433;Initial Catalog=HMS;Integrated Security=False;User ID=YourUsername;Password=YourPassword;TrustServerCertificate=True;"
-```
-
-#### Connection String Parameters Explained:
-
-- **Data Source**: Your SQL Server instance name or IP address
-  - `.\SQLEXPRESS` = Local SQL Server Express instance
-  - `(localdb)\MSSQLLocalDB` = LocalDB instance
-  - `localhost` = Default local SQL Server
-  - `ServerName\InstanceName` = Named instance
-  - `IPAddress,Port` = Remote server (e.g., `192.168.1.100,1433`)
-
-- **Initial Catalog**: The database name (should be `HMS`)
-
-- **Integrated Security**: 
-  - `True` = Use Windows Authentication (recommended)
-  - `False` = Use SQL Server Authentication (requires User ID and Password)
-
-- **TrustServerCertificate**: 
-  - `True` = Bypass SSL certificate validation (development only)
-  - `False` = Validate SSL certificates (production)
-
-**Important Notes:**
-- Make sure the SQL Server instance name matches exactly (case-sensitive on Linux)
-- If you're using SQL Server Authentication, set `Integrated Security=False` and provide `User ID` and `Password`
-- After changing the connection string, rebuild the application before running
+After changing the connection string, rebuild the application.
 
 ### Alternative: Update DatabaseHelper.cs
 
