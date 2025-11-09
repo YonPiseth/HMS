@@ -1,0 +1,100 @@
+%% Complete System Class Diagram
+classDiagram
+    class IContactable {
+        <<interface>>
+        +Email : string
+        +Phone : string
+        +Address : string
+    }
+
+    class Person {
+        <<abstract>>
+        +FirstName : string
+        +LastName : string
+        +FullName : string
+        +Validate() : bool
+        +GetDisplayName() : string
+    }
+
+    class Patient {
+        +PatientID : int
+        +DateOfBirth : DateTime
+        +Gender : string
+    }
+
+    class Doctor {
+        +DoctorID : int
+        +SpecializationID : int
+    }
+
+    class Supplier {
+        +SupplierID : int
+        +SupplierName : string
+    }
+
+    class IRepository~T~ {
+        <<interface>>
+        +GetAll() : List~T~
+        +GetById(id : int) : T
+        +Insert(entity : T) : bool
+        +Update(entity : T) : bool
+        +Delete(id : int) : bool
+    }
+
+    class BaseRepository~T~ {
+        <<abstract>>
+        +GetAll() : List~T~
+        +Insert(entity : T) : bool
+        #MapDataReader(reader : SqlDataReader) : T
+        #CreateInsertCommand(entity : T, con : SqlConnection) : SqlCommand
+    }
+
+    class PatientRepository {
+    }
+
+    class DoctorRepository {
+    }
+
+    class SupplierRepository {
+    }
+
+    class BaseEntityControl~T, TRepository~ {
+        <<abstract>>
+        #repository : TRepository
+        #btnAdd : Button
+        #btnUpdate : Button
+        #btnDelete : Button
+        #LoadData() : void
+        #CreateEntityForm() : Form
+    }
+
+    class UIHelper {
+        <<static>>
+        +StyleDataGridView() : void
+        +StyleModernButton() : void
+    }
+
+    class UITheme {
+        <<static>>
+        +PrimaryBlue : Color
+        +FontHeading1 : Font
+    }
+
+    IContactable <|.. Person
+    Person <|-- Patient
+    Person <|-- Doctor
+    IContactable <|.. Supplier
+
+    IRepository~T~ <|.. BaseRepository~T~
+    BaseRepository~Patient~ <|-- PatientRepository
+    BaseRepository~Doctor~ <|-- DoctorRepository
+    BaseRepository~Supplier~ <|-- SupplierRepository
+
+    BaseEntityControl~T, TRepository~ ..> IRepository~T~ : uses
+    BaseEntityControl~T, TRepository~ ..> UIHelper : uses
+    UIHelper ..> UITheme : uses
+
+    PatientRepository ..> Patient : manages
+    DoctorRepository ..> Doctor : manages
+    SupplierRepository ..> Supplier : manages
+

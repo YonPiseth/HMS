@@ -1,0 +1,97 @@
+%% Repository Pattern Class Diagram
+classDiagram
+    class IRepository~T~ {
+        <<interface>>
+        +GetAll() : List~T~
+        +GetById(id : int) : T
+        +Insert(entity : T) : bool
+        +Update(entity : T) : bool
+        +Delete(id : int) : bool
+        +Search(searchTerm : string) : List~T~
+    }
+
+    class BaseRepository~T~ {
+        <<abstract>>
+        #TableName : string
+        #PrimaryKey : string
+        +GetAll() : List~T~
+        +GetById(id : int) : T
+        +Insert(entity : T) : bool
+        +Update(entity : T) : bool
+        +Delete(id : int) : bool
+        +Search(searchTerm : string) : List~T~
+        #MapDataReader(reader : SqlDataReader) : T
+        #CreateInsertCommand(entity : T, con : SqlConnection) : SqlCommand
+        #CreateUpdateCommand(entity : T, con : SqlConnection) : SqlCommand
+        #GetEntityId(entity : T) : int
+        #GetSearchColumns() : string[]
+        #SetEntityId(entity : T, id : int) : void
+    }
+
+    class PatientRepository {
+        #TableName : string
+        #PrimaryKey : string
+        +GetByIdWithRoom(patientId : int) : Patient
+        +GetAllWithRooms() : List~Patient~
+        #MapDataReader(reader : SqlDataReader) : Patient
+        #CreateInsertCommand(entity : Patient, con : SqlConnection) : SqlCommand
+        #CreateUpdateCommand(entity : Patient, con : SqlConnection) : SqlCommand
+        #GetEntityId(entity : Patient) : int
+        #GetSearchColumns() : string[]
+        #SetEntityId(entity : Patient, id : int) : void
+        #AddPatientParameters(cmd : SqlCommand, entity : Patient) : void
+    }
+
+    class DoctorRepository {
+        #TableName : string
+        #PrimaryKey : string
+        +GetAllWithSpecialization() : List~Doctor~
+        +SearchWithSpecialization(searchTerm : string) : List~Doctor~
+        #MapDataReader(reader : SqlDataReader) : Doctor
+        #CreateInsertCommand(entity : Doctor, con : SqlConnection) : SqlCommand
+        #CreateUpdateCommand(entity : Doctor, con : SqlConnection) : SqlCommand
+        #GetEntityId(entity : Doctor) : int
+        #GetSearchColumns() : string[]
+        #AddDoctorParameters(cmd : SqlCommand, entity : Doctor) : void
+    }
+
+    class SupplierRepository {
+        #TableName : string
+        #PrimaryKey : string
+        #MapDataReader(reader : SqlDataReader) : Supplier
+        #CreateInsertCommand(entity : Supplier, con : SqlConnection) : SqlCommand
+        #CreateUpdateCommand(entity : Supplier, con : SqlConnection) : SqlCommand
+        #GetEntityId(entity : Supplier) : int
+        #GetSearchColumns() : string[]
+        #AddSupplierParameters(cmd : SqlCommand, entity : Supplier) : void
+    }
+
+    class Patient {
+        +PatientID : int
+        +FirstName : string
+        +LastName : string
+    }
+
+    class Doctor {
+        +DoctorID : int
+        +FirstName : string
+        +LastName : string
+    }
+
+    class Supplier {
+        +SupplierID : int
+        +SupplierName : string
+    }
+
+    IRepository~T~ <|.. BaseRepository~T~ : implements
+    BaseRepository~Patient~ <|-- PatientRepository : inherits
+    BaseRepository~Doctor~ <|-- DoctorRepository : inherits
+    BaseRepository~Supplier~ <|-- SupplierRepository : inherits
+
+    PatientRepository ..> Patient : uses
+    DoctorRepository ..> Doctor : uses
+    SupplierRepository ..> Supplier : uses
+
+    note for BaseRepository~T~ "Template Method Pattern\nDefines algorithm structure\nDerived classes implement\nabstract methods"
+    note for IRepository~T~ "Generic interface for\npolymorphism - all repositories\nimplement the same contract"
+
