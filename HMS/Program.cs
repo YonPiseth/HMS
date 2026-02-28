@@ -33,10 +33,9 @@ static class Program
                                 splashForm.ShowDialog();
                             }
                         }
-                        catch (Exception splashEx)
+                        catch (Exception)
                         {
-                            LogException(splashEx, "Error showing splash screen");
-                            MessageBox.Show("Error showing splash screen: " + splashEx.Message, "Splash Screen Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("Error showing splash screen", "Splash Screen Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return; // Exit if splash screen fails
                         }
 
@@ -57,7 +56,6 @@ static class Program
             }
             catch (Exception ex)
             {
-                LogException(ex, "Error in main application loop");
                 MessageBox.Show("An unexpected error occurred: " + ex.Message, "Application Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 break; // Exit on unexpected error
             }
@@ -67,32 +65,7 @@ static class Program
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
         Exception ex = (Exception)e.ExceptionObject;
-        LogException(ex, "Unhandled Exception");
-        MessageBox.Show("An unhandled application error occurred: " + ex.Message + "\n\nDetails logged to error.log", "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("An unhandled application error occurred: " + ex.Message, "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 
-    private static void LogException(Exception ex, string context)
-    {
-        try
-        {
-            string logFilePath = "error.log";
-            using (System.IO.StreamWriter writer = new System.IO.StreamWriter(logFilePath, true))
-            {
-                writer.WriteLine("Date: " + DateTime.Now.ToString());
-                writer.WriteLine("Context: " + context);
-                writer.WriteLine("Message: " + ex.Message);
-                writer.WriteLine("Stack Trace: " + ex.StackTrace);
-                if (ex.InnerException != null)
-                {
-                    writer.WriteLine("Inner Exception Message: " + ex.InnerException.Message);
-                    writer.WriteLine("Inner Exception Stack Trace: " + ex.InnerException.StackTrace);
-                }
-                writer.WriteLine(new string('-', 50));
-            }
-        }
-        catch (Exception logEx)
-        {
-            MessageBox.Show("Error writing to log file: " + logEx.Message, "Logging Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-    }
 }
