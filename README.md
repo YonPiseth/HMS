@@ -29,6 +29,7 @@ A comprehensive Windows Forms application developed in C# for managing hospital 
 - [Running the Application](#running-the-application)
 - [Default Login Credentials](#default-login-credentials)
 - [Project Structure](#project-structure)
+- [Forms Description](#forms-description)
 - [Screenshots](#screenshots)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
@@ -72,7 +73,7 @@ The application features role-based access control (Admin, Doctor, Patient) and 
 - ✅ **Centralized Database Connection**: Using `DatabaseHelper` class for consistent database access
 - ✅ **Modern UI**: Clean, professional interface with consistent styling
 - ✅ **Search Functionality**: Quick search across all modules
-- ✅ **Data Validation**: Input validation and error handling
+- ✅ **Data Validation**: Comprehensive input validation and centralized error handling via message boxes
 - ✅ **Soft Delete**: Records are marked as deleted rather than permanently removed
 - ✅ **Image Support**: Profile photo upload and display for patients and doctors
 
@@ -280,11 +281,55 @@ HMS/
 
 ---
 
-## 📸 Screenshots
+## 📋 Forms Description
 
-> **Note**: Add screenshots of your application here (login screen, main dashboard, patient management, etc.)
+### SplashForm
+The SplashForm is the initial loading screen displayed when the application starts. It features an animated progress bar, application logo, and version information to provide visual feedback during application initialization. The form automatically closes once the loading process completes, transitioning to the login screen.
+
+### LoginForm
+The LoginForm handles user authentication by validating username and password credentials against the database. It supports role-based access control (Admin, Doctor, Patient) and updates the user's last login timestamp upon successful authentication. The form provides a clean, modern interface with validation to ensure both fields are entered before submission.
+
+### MainForm
+The MainForm serves as the central dashboard and navigation hub for the entire application after successful login. It displays a navigation panel with buttons for accessing different modules (Patients, Doctors, Appointments, Billing, etc.) and dynamically adjusts the interface based on the user's role. The form uses a content panel system to display different user controls and provides role-specific views, such as hiding navigation for Patient users.
+
+### PatientForm
+The PatientForm allows users to add or edit comprehensive patient information including personal details, contact information, medical data, and profile photos. It supports room assignment functionality, linking patients to specific hospital rooms, and includes validation to ensure all required fields are properly filled. The form can operate in both "new patient" and "edit existing patient" modes, automatically handling database insertions or updates accordingly.
+
+### DoctorForm
+The DoctorForm enables management of doctor profiles with fields for personal information, specialization, qualifications, experience, and availability status. It includes photo upload capability and integrates with the doctor specialization lookup table to maintain data consistency. The form validates all required fields and supports both creating new doctor records and updating existing ones.
+
+### AppointmentForm
+The AppointmentForm facilitates scheduling patient appointments by allowing selection of a patient, doctor, date, time, and appointment reason. It includes status tracking (Scheduled, Completed, Cancelled, No Show) and loads available patients and doctors from the database into dropdown lists. The form ensures all mandatory fields are selected before saving an appointment record.
+
+### BillingForm
+The BillingForm provides a comprehensive interface for creating and managing patient bills with line items, quantities, and pricing. It automatically calculates subtotals, applies discounts and tax rates, and computes the grand total in real-time as items are added or modified. The form supports editing existing bills and includes validation to ensure at least one line item exists before saving.
+
+### InvoiceForm
+The InvoiceForm allows users to select multiple unpaid bills for a patient and combine them into a single invoice. It displays a list of available bills with checkboxes for selection and shows a preview of selected bill line items in a separate grid. The form generates a new invoice record, links selected bills to the invoice, and opens the receipt form upon successful creation.
+
+### InvoiceReceiptForm
+The InvoiceReceiptForm displays a formatted receipt view of a generated invoice with all line items, totals, and payment information. It provides a print-friendly layout showing patient details, invoice number, date, and all associated billing items. The form serves as both a display and printing interface for invoice documentation.
+
+### PatientInvoiceHistoryForm
+The PatientInvoiceHistoryForm shows a comprehensive list of all invoices associated with a specific patient. It displays invoice details including dates, amounts, payment status, and allows users to view or print individual invoice receipts. The form provides historical tracking of a patient's billing and payment records.
+
+### MedicineForm
+The MedicineForm manages medicine inventory by allowing entry of medicine details including name, category, supplier, description, dosage, side effects, pricing, and stock quantity. It integrates with the supplier lookup table and includes validation to ensure all required fields are completed. The form supports both adding new medicines and updating existing inventory records.
+
+### DiseaseForm
+The DiseaseForm provides a simple interface for maintaining the disease database with disease names and descriptions. It includes validation to ensure both the disease name and description fields are filled before saving. The form helps maintain a comprehensive catalog of diseases for reference in patient records and medical documentation.
+
+### RoomForm
+The RoomForm manages hospital room information including room number, type, floor, capacity, daily rate, and availability status. It integrates with the room type lookup table and includes validation for required fields such as room number, type, and status. The form supports creating new room records and updating existing room information, including capacity and pricing details.
+
+### SupplierForm
+The SupplierForm manages supplier information including company name, contact person, email, phone, and address details. It includes email and phone number format validation to ensure data quality and requires all mandatory fields to be completed. The form supports both adding new suppliers and updating existing supplier records for medicine procurement management.
+
+### PatientRegistrationForm
+The PatientRegistrationForm provides a detailed patient registration interface with comprehensive validation including email format, phone number format, and required field checks. It includes tooltips for user guidance and uses an error provider to display validation messages inline. The form supports both new patient registration and editing existing patient records with proper data validation before database operations.
 
 ---
+
 
 ## 🔧 Troubleshooting
 

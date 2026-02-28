@@ -9,65 +9,76 @@ namespace HMS.UI
     /// </summary>
     public static class UITheme
     {
-        // Primary Colors
-        public static Color PrimaryBlue = Color.FromArgb(33, 150, 243);      // Material Blue 500
-        public static Color PrimaryBlueDark = Color.FromArgb(25, 118, 210);  // Material Blue 600
-        public static Color PrimaryBlueLight = Color.FromArgb(66, 165, 245); // Material Blue 400
-        public static Color PrimaryBlueAccent = Color.FromArgb(0, 122, 204); // Visual Studio Blue
+        // Primary Colors (Medical Emerald & Slate)
+        public static Color PrimaryEmerald = Color.FromArgb(16, 185, 129);   // Modern Emerald 500
+        public static Color PrimarySlate = Color.FromArgb(30, 41, 59);     // Slate 800 (for depth)
+        public static Color PrimaryBlue = Color.FromArgb(14, 165, 233);      // Sky Blue 500
+        
+        // Semantic Colors
+        public static Color BrandPrimary = PrimaryEmerald;
+        public static Color BrandSecondary = PrimarySlate;
+        public static Color BrandAccent = PrimaryBlue;
 
-        // Secondary Colors
-        public static Color SecondaryGreen = Color.FromArgb(76, 175, 80);    // Material Green 500
-        public static Color SecondaryRed = Color.FromArgb(244, 67, 54);      // Material Red 500
-        public static Color SecondaryOrange = Color.FromArgb(255, 152, 0);   // Material Orange 500
-        public static Color SecondaryPurple = Color.FromArgb(156, 39, 176);  // Material Purple 500
-
-        // Neutral Colors
-        public static Color BackgroundLight = Color.FromArgb(250, 250, 250); // Almost white
+        // Neutral Colors (Premium Grays)
+        public static Color BackgroundLight = Color.FromArgb(248, 250, 252); // Slate 50
         public static Color BackgroundWhite = Color.White;
-        public static Color BackgroundGray = Color.FromArgb(245, 245, 245);  // Light gray
-        public static Color BackgroundDark = Color.FromArgb(33, 33, 33);     // Dark gray
+        public static Color BackgroundGray = Color.FromArgb(241, 245, 249);  // Slate 100
+        public static Color BackgroundDark = Color.FromArgb(15, 23, 42);     // Slate 900
+        public static Color BackgroundSidebar = Color.FromArgb(30, 41, 59);  // Slate 800
 
         // Text Colors
-        public static Color TextPrimary = Color.FromArgb(33, 33, 33);        // Almost black
-        public static Color TextSecondary = Color.FromArgb(117, 117, 117);   // Medium gray
-        public static Color TextDisabled = Color.FromArgb(189, 189, 189);    // Light gray
-        public static Color TextOnPrimary = Color.White;                     // White on colored backgrounds
+        public static Color TextPrimary = Color.FromArgb(15, 23, 42);        // Slate 900
+        public static Color TextSecondary = Color.FromArgb(71, 85, 105);     // Slate 500
+        public static Color TextDisabled = Color.FromArgb(148, 163, 184);    // Slate 400
+        public static Color TextOnPrimary = Color.White;
+        public static Color TextOnSidebar = Color.FromArgb(226, 232, 240);   // Slate 200
 
         // Border Colors
-        public static Color BorderLight = Color.FromArgb(224, 224, 224);     // Light border
-        public static Color BorderMedium = Color.FromArgb(189, 189, 189);    // Medium border
-        public static Color BorderDark = Color.FromArgb(117, 117, 117);      // Dark border
+        public static Color BorderLight = Color.FromArgb(226, 232, 240);     // Slate 200
+        public static Color BorderMedium = Color.FromArgb(203, 213, 225);    // Slate 300
+        public static Color BorderDark = Color.FromArgb(148, 163, 184);      // Slate 400
 
-        // Status Colors
-        public static Color Success = Color.FromArgb(76, 175, 80);           // Green
-        public static Color Warning = Color.FromArgb(255, 152, 0);           // Orange
-        public static Color Error = Color.FromArgb(244, 67, 54);             // Red
-        public static Color Info = Color.FromArgb(33, 150, 243);             // Blue
+        // Status Colors (Vibrant)
+        public static Color Success = Color.FromArgb(34, 197, 94);           // Green 500
+        public static Color Warning = Color.FromArgb(245, 158, 11);           // Amber 500
+        public static Color Error = Color.FromArgb(239, 68, 68);             // Red 500
+        public static Color Info = Color.FromArgb(59, 130, 246);             // Blue 500
 
         // Hover/Active States
-        public static Color HoverBlue = Color.FromArgb(25, 118, 210);
-        public static Color ActiveBlue = Color.FromArgb(21, 101, 192);
-        public static Color HoverGray = Color.FromArgb(245, 245, 245);
-        public static Color ActiveGray = Color.FromArgb(238, 238, 238);
+        public static Color HoverBrand = Color.FromArgb(5, 150, 105);        // Emerald 600
+        public static Color ActiveBrand = Color.FromArgb(4, 120, 87);         // Emerald 700
+        public static Color HoverGray = Color.FromArgb(241, 245, 249);       // Slate 100
+        public static Color ActiveGray = Color.FromArgb(226, 232, 240);      // Slate 200
 
         // Sidebar/Navigation Colors
-        public static Color SidebarBackground = Color.FromArgb(42, 42, 42);  // Dark sidebar
-        public static Color SidebarHover = Color.FromArgb(55, 55, 55);       // Darker on hover
-        public static Color SidebarActive = Color.FromArgb(33, 150, 243);    // Blue for active
-        public static Color SidebarText = Color.White;
-        public static Color SidebarTextHover = Color.White;
+        public static Color SidebarBackground = PrimarySlate;
+        public static Color SidebarHover = Color.FromArgb(51, 65, 85);       // Slate 700
+        public static Color SidebarActive = PrimaryEmerald;
+        public static Color SidebarText = Color.FromArgb(226, 232, 240);
+        public static Color SidebarTextActive = Color.White;
 
-        // Card Colors
+        // Card & Surface Colors
         public static Color CardBackground = Color.White;
-        public static Color CardShadow = Color.FromArgb(0, 0, 0, 25);        // Semi-transparent black
-        public static Color CardBorder = Color.FromArgb(224, 224, 224);
+        public static Color CardShadow = Color.FromArgb(0, 0, 0, 15);        // Softer shadow
+        public static Color CardBorder = Color.FromArgb(241, 245, 249);
 
         // DataGrid Colors
-        public static Color GridHeader = Color.FromArgb(33, 150, 243);
+        public static Color GridHeader = PrimaryBlue;
         public static Color GridHeaderText = Color.White;
         public static Color GridRowAlternate = Color.FromArgb(250, 250, 250);
         public static Color GridRowHover = Color.FromArgb(236, 245, 253);
         public static Color GridRowSelected = Color.FromArgb(187, 222, 251);
+
+        // Compatibility Aliases (for older code)
+        public static Color HoverBlue => HoverBrand;
+        public static Color ActiveBlue => ActiveBrand;
+        public static Color SecondaryGreen => Success;
+        public static Color SecondaryRed => Error;
+        public static Color SecondaryOrange => Warning;
+        public static Color SecondaryPurple = Color.FromArgb(156, 39, 176);
+        public static Color PrimaryBlueDark => PrimarySlate;
+        public static Color PrimaryBlueLight => PrimaryBlue;
+        public static Color SidebarTextHover => Color.White;
 
         // Fonts
         public static Font FontHeading1 = new Font("Segoe UI", 28, FontStyle.Bold);

@@ -59,6 +59,25 @@ namespace HMS.Repositories
             return entities;
         }
 
+        public virtual async Task<List<T>> GetAllAsync()
+        {
+            List<T> entities = new List<T>();
+            using (SqlConnection con = DatabaseHelper.GetConnection())
+            {
+                string query = $"SELECT * FROM {TableName} WHERE IsDeleted = 0";
+                SqlCommand cmd = new SqlCommand(query, con);
+                await con.OpenAsync();
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        entities.Add(MapDataReader(reader));
+                    }
+                }
+            }
+            return entities;
+        }
+
         public virtual T GetById(int id)
         {
             using (SqlConnection con = DatabaseHelper.GetConnection())
@@ -70,6 +89,25 @@ namespace HMS.Repositories
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     if (reader.Read())
+                    {
+                        return MapDataReader(reader);
+                    }
+                }
+            }
+            return null;
+        }
+
+        public virtual async Task<T> GetByIdAsync(int id)
+        {
+            using (SqlConnection con = DatabaseHelper.GetConnection())
+            {
+                string query = $"SELECT * FROM {TableName} WHERE {PrimaryKey} = @Id AND IsDeleted = 0";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@Id", id);
+                await con.OpenAsync();
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
                     {
                         return MapDataReader(reader);
                     }
@@ -91,6 +129,28 @@ namespace HMS.Repositories
                         SetEntityId(entity, Convert.ToInt32(result));
                     else
                         cmd.ExecuteNonQuery();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public virtual async Task<bool> InsertAsync(T entity)
+        {
+            using (SqlConnection con = DatabaseHelper.GetConnection())
+            {
+                await con.OpenAsync();
+                SqlCommand cmd = CreateInsertCommand(entity, con);
+                try
+                {
+                    object result = await cmd.ExecuteScalarAsync();
+                    if (result != null && result != DBNull.Value)
+                        SetEntityId(entity, Convert.ToInt32(result));
+                    else
+                        await cmd.ExecuteNonQueryAsync();
                     return true;
                 }
                 catch (Exception)
@@ -125,6 +185,24 @@ namespace HMS.Repositories
             }
         }
 
+        public virtual async Task<bool> UpdateAsync(T entity)
+        {
+            using (SqlConnection con = DatabaseHelper.GetConnection())
+            {
+                await con.OpenAsync();
+                SqlCommand cmd = CreateUpdateCommand(entity, con);
+                try
+                {
+                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                    return rowsAffected > 0;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
         public virtual bool Delete(int id)
         {
             using (SqlConnection con = DatabaseHelper.GetConnection())
@@ -136,6 +214,26 @@ namespace HMS.Repositories
                 try
                 {
                     int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public virtual async Task<bool> DeleteAsync(int id)
+        {
+            using (SqlConnection con = DatabaseHelper.GetConnection())
+            {
+                string query = $"UPDATE {TableName} SET IsDeleted = 1 WHERE {PrimaryKey} = @Id";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@Id", id);
+                await con.OpenAsync();
+                try
+                {
+                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
                     return rowsAffected > 0;
                 }
                 catch (Exception)
@@ -165,6 +263,34 @@ namespace HMS.Repositories
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
+                    {
+                        entities.Add(MapDataReader(reader));
+                    }
+                }
+            }
+            return entities;
+        }
+
+        public virtual async Task<List<T>> SearchAsync(string searchTerm)
+        {
+            List<T> entities = new List<T>();
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return await GetAllAsync();
+            }
+
+            using (SqlConnection con = DatabaseHelper.GetConnection())
+            {
+                string[] searchColumns = GetSearchColumns();
+                string searchConditions = string.Join(" OR ", Array.ConvertAll(searchColumns, col => $"{col} LIKE @Search"));
+                string query = $"SELECT * FROM {TableName} WHERE ({searchConditions}) AND IsDeleted = 0";
+                
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@Search", $"%{searchTerm}%");
+                await con.OpenAsync();
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
                     {
                         entities.Add(MapDataReader(reader));
                     }

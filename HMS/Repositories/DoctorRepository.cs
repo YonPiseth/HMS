@@ -117,6 +117,33 @@ namespace HMS.Repositories
             return doctors;
         }
 
+        public async Task<List<Doctor>> GetAllWithSpecializationAsync()
+        {
+            List<Doctor> doctors = new List<Doctor>();
+            using (SqlConnection con = DatabaseHelper.GetConnection())
+            {
+                string query = @"SELECT d.*, t.SpecializationName 
+                               FROM tblDoctor d
+                               LEFT JOIN tblDoctorType t ON d.SpecializationID = t.SpecializationID
+                               WHERE d.IsDeleted = 0";
+                SqlCommand cmd = new SqlCommand(query, con);
+                await con.OpenAsync();
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var doctor = MapDataReader(reader);
+                        if (reader["SpecializationName"] != DBNull.Value)
+                        {
+                            doctor.SpecializationName = reader["SpecializationName"]?.ToString() ?? string.Empty;
+                        }
+                        doctors.Add(doctor);
+                    }
+                }
+            }
+            return doctors;
+        }
+
         /// <summary>
         /// Searches doctors with specialization names
         /// </summary>
@@ -148,6 +175,47 @@ namespace HMS.Repositories
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
+                    {
+                        var doctor = MapDataReader(reader);
+                        if (reader["SpecializationName"] != DBNull.Value)
+                        {
+                            doctor.SpecializationName = reader["SpecializationName"]?.ToString() ?? string.Empty;
+                        }
+                        doctors.Add(doctor);
+                    }
+                }
+            }
+            return doctors;
+        }
+
+        public async Task<List<Doctor>> SearchWithSpecializationAsync(string searchTerm)
+        {
+            List<Doctor> doctors = new List<Doctor>();
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return await GetAllWithSpecializationAsync();
+            }
+
+            using (SqlConnection con = DatabaseHelper.GetConnection())
+            {
+                string query = @"SELECT d.*, t.SpecializationName 
+                               FROM tblDoctor d
+                               LEFT JOIN tblDoctorType t ON d.SpecializationID = t.SpecializationID
+                               WHERE d.IsDeleted = 0 AND (
+                                   d.FirstName LIKE @Search OR
+                                   d.LastName LIKE @Search OR
+                                   d.ContactNumber LIKE @Search OR
+                                   d.Email LIKE @Search OR
+                                   d.Qualification LIKE @Search OR
+                                   d.Department LIKE @Search OR
+                                   t.SpecializationName LIKE @Search)";
+                
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@Search", $"%{searchTerm}%");
+                await con.OpenAsync();
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
                     {
                         var doctor = MapDataReader(reader);
                         if (reader["SpecializationName"] != DBNull.Value)

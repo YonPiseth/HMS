@@ -16,7 +16,7 @@ namespace HMS.Controls
     /// <typeparam name="TRepository">The repository type for the entity</typeparam>
     public abstract class BaseEntityControl<T, TRepository> : UserControl 
         where T : class 
-        where TRepository : IRepository<T>, new()
+        where TRepository : IRepository<T>
     {
         protected DataGridView dataGridView1;
         protected TextBox txtSearch;
@@ -27,10 +27,12 @@ namespace HMS.Controls
         protected FlowLayoutPanel buttonPanel;
         protected TRepository repository;
 
-        protected BaseEntityControl()
+        protected BaseEntityControl(TRepository repository)
         {
-            repository = new TRepository();
+            this.repository = repository;
+            this.BackColor = Color.White; // Ensure opacity for transitions
             InitializeComponent();
+            UIHelper.SetDoubleBuffered(this);
             LoadData();
         }
 

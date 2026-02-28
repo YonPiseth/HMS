@@ -146,12 +146,12 @@ namespace HMS
         public static void StyleButton(Button btn)
         {
             btn.FlatStyle = FlatStyle.Flat;
-            btn.BackColor = Color.FromArgb(0, 120, 215);
-            btn.ForeColor = Color.White;
-            btn.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            btn.Height = 36;
-            btn.Width = 120;
-            btn.Margin = new Padding(10, 0, 0, 0);
+            btn.BackColor = UITheme.BrandPrimary;
+            btn.ForeColor = UITheme.TextOnPrimary;
+            btn.Font = UITheme.FontButton;
+            btn.Height = 40;
+            btn.Width = 140;
+            btn.Margin = new Padding(UITheme.SpacingSM, 0, 0, 0);
             btn.FlatAppearance.BorderSize = 0;
             btn.Cursor = Cursors.Hand;
         }
@@ -246,16 +246,16 @@ namespace HMS
             
             btn.MouseEnter += (s, e) => 
             {
-                btn.BackColor = AccentHover;
+                btn.BackColor = UITheme.HoverBrand;
                 updateRegion(s, e);
             };
             btn.MouseLeave += (s, e) => 
             {
-                btn.BackColor = AccentColor;
+                btn.BackColor = UITheme.BrandPrimary;
                 updateRegion(s, e);
             };
-            btn.MouseDown += (s, e) => btn.BackColor = UITheme.ActiveBlue;
-            btn.MouseUp += (s, e) => btn.BackColor = AccentHover;
+            btn.MouseDown += (s, e) => btn.BackColor = UITheme.ActiveBrand;
+            btn.MouseUp += (s, e) => btn.BackColor = UITheme.HoverBrand;
             
             // Update region when button is resized
             btn.Resize += updateRegion;
@@ -303,15 +303,15 @@ namespace HMS
 
             if (isActive)
             {
-                // Active state: Dark blue background with white text for better contrast
-                btn.BackColor = UITheme.PrimaryBlue;
-                btn.ForeColor = Color.White; // White text on blue background - high contrast
+                // Active state: Brand Primary background with white text
+                btn.BackColor = UITheme.BrandPrimary;
+                btn.ForeColor = UITheme.TextOnPrimary;
                 btn.Font = new Font(btn.Font, FontStyle.Bold);
             }
             else
             {
                 btn.BackColor = Color.Transparent;
-                btn.ForeColor = UITheme.TextPrimary; // Dark text on light background
+                btn.ForeColor = UITheme.TextOnSidebar; 
             }
 
             // Hover effects
@@ -319,8 +319,8 @@ namespace HMS
             {
                 if (!isActive)
                 {
-                    btn.BackColor = UITheme.HoverGray; // Light gray on hover
-                    btn.ForeColor = UITheme.TextPrimary; // Keep dark text
+                    btn.BackColor = UITheme.SidebarHover; 
+                    btn.ForeColor = Color.White;
                 }
             };
             btn.MouseLeave += (s, e) =>
@@ -328,7 +328,7 @@ namespace HMS
                 if (!isActive)
                 {
                     btn.BackColor = Color.Transparent;
-                    btn.ForeColor = UITheme.TextPrimary;
+                    btn.ForeColor = UITheme.TextOnSidebar;
                 }
             };
         }
@@ -529,5 +529,13 @@ namespace HMS
             public static extern IntPtr CreateRoundRectRgn(
                 int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidthEllipse, int nHeightEllipse);
         }
+
+        public static void SetDoubleBuffered(Control control)
+        {
+            if (SystemInformation.TerminalServerSession) return;
+            System.Reflection.PropertyInfo dbProp = typeof(Control).GetProperty("DoubleBuffered",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            dbProp?.SetValue(control, true, null);
+        }
     }
-} 
+}
