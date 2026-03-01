@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Configuration;
 using HMS;
+using HMS.UI;
 
 namespace HMS
 {
@@ -32,33 +33,71 @@ namespace HMS
         {
             try
             {
-                UIHelper.ApplyModernTheme(this);
+                this.BackColor = UITheme.BackgroundWhite;
+                this.FormBorderStyle = FormBorderStyle.None;
+                this.Size = new Size(450, 550);
                 
-                if (btnLogin != null) 
-                    UIHelper.StyleModernButton(btnLogin);
+                // Add a custom title bar panel
+                Panel titleBar = new Panel { Dock = DockStyle.Top, Height = 40, BackColor = UITheme.PrimarySlate };
+                Label lblClose = new Label { Text = "×", ForeColor = Color.White, Font = new Font("Segoe UI", 18), 
+                                           AutoSize = true, Location = new Point(415, 5), Cursor = Cursors.Hand };
+                lblClose.Click += (s, ev) => this.Close();
+                titleBar.Controls.Add(lblClose);
+                this.Controls.Add(titleBar);
+
+                // Add Premium Card effect
+                Panel card = UIHelper.CreateModernCard(UITheme.RadiusLG, true);
+                card.Width = 380;
+                card.Height = 420;
+                card.Location = new Point((this.Width - card.Width) / 2, (this.Height - card.Height) / 2 + 20);
+                this.Controls.Add(card);
+                card.BringToFront();
+
+                TableLayoutPanel cardLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 6, Padding = new Padding(20) };
+                cardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60)); // Logo
+                cardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 50)); // Title
+                cardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 70)); // Username
+                cardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 70)); // Password
+                cardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60)); // Login Button
+                cardLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); // Spacer
+                card.Controls.Add(cardLayout);
+
+                Label lblLogo = new Label { Text = "HMS PRO", Font = new Font("Segoe UI", 24, FontStyle.Bold), 
+                                         ForeColor = UITheme.BrandPrimary, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter };
+                Label lblWelcome = new Label { Text = "Sign in to continue", Font = UITheme.FontBodyLarge, 
+                                            ForeColor = UITheme.TextSecondary, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter };
                 
-                if (btnCancel != null)
-                {
-                    btnCancel.FlatStyle = FlatStyle.Flat;
-                    btnCancel.BackColor = UI.UITheme.BackgroundGray;
-                    btnCancel.ForeColor = UI.UITheme.TextPrimary;
-                    btnCancel.Font = UI.UITheme.FontButton;
-                    btnCancel.FlatAppearance.BorderSize = 0;
-                    btnCancel.Cursor = Cursors.Hand;
-                    btnCancel.Height = 40;
-                }
+                cardLayout.Controls.Add(lblLogo, 0, 0);
+                cardLayout.Controls.Add(lblWelcome, 0, 1);
+
+                // Re-parent existing controls to the new modern layout
+                Panel userPanel = new Panel { Dock = DockStyle.Fill, Padding = new Padding(0, 10, 0, 10) };
+                Label lUser = new Label { Text = "Username", Font = UITheme.FontBodySmall, ForeColor = UITheme.TextSecondary, Dock = DockStyle.Top };
+                txtUsername.Dock = DockStyle.Bottom;
+                UIHelper.StyleModernTextBox(txtUsername);
+                userPanel.Controls.Add(lUser);
+                userPanel.Controls.Add(txtUsername);
+                cardLayout.Controls.Add(userPanel, 0, 2);
+
+                Panel passPanel = new Panel { Dock = DockStyle.Fill, Padding = new Padding(0, 10, 0, 10) };
+                Label lPass = new Label { Text = "Password", Font = UITheme.FontBodySmall, ForeColor = UITheme.TextSecondary, Dock = DockStyle.Top };
+                txtPassword.Dock = DockStyle.Bottom;
+                UIHelper.StyleModernTextBox(txtPassword);
+                passPanel.Controls.Add(lPass);
+                passPanel.Controls.Add(txtPassword);
+                cardLayout.Controls.Add(passPanel, 0, 3);
+
+                btnLogin.Dock = DockStyle.Fill;
+                UIHelper.StyleModernButton(btnLogin);
+                btnLogin.Text = "LOG IN";
+                cardLayout.Controls.Add(btnLogin, 0, 4);
                 
-                if (lblTitle != null)
-                {
-                    UIHelper.StyleHeading(lblTitle, 2);
-                    lblTitle.ForeColor = UI.UITheme.PrimaryBlue;
-                }
-                if (lblUsername != null) UIHelper.StyleModernLabel(lblUsername);
-                if (lblPassword != null) UIHelper.StyleModernLabel(lblPassword);
+                // Remove the old layout
+                if (mainLayout != null) this.Controls.Remove(mainLayout);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Theme error: " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("Login Theme error: " + ex.Message);
             }
         }
 

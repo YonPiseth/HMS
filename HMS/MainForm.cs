@@ -4,6 +4,7 @@ using HMS;
 using System.Drawing;
 using Microsoft.Data.SqlClient;
 using HMS.UI;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HMS
 {
@@ -13,43 +14,66 @@ namespace HMS
         private Panel navPanel;
         private string userRole;
         private int userID;
-
+        private bool _isAnimating = false;
         public bool IsLogout { get; private set; } = false;
+        private readonly IServiceProvider _serviceProvider;
 
-        public MainForm(string userRole, int userID)
+        public MainForm(string userRole, int userID, IServiceProvider serviceProvider)
         {
             this.userRole = userRole;
             this.userID = userID;
+            this._serviceProvider = serviceProvider;
             
             InitializeComponent();
+            this.DoubleBuffered = true;
+
+            // Set Premium Backgrounds
+            this.BackColor = UITheme.BackgroundWhite;
+            if (navPanel != null) 
+            {
+                navPanel.BackColor = UITheme.SidebarBackground;
+                UIHelper.SetDoubleBuffered(navPanel);
+            }
+            if (contentPanel != null) 
+            {
+                contentPanel.BackColor = UITheme.BackgroundLight;
+                UIHelper.SetDoubleBuffered(contentPanel);
+            }
+
+            // Add Logo/Title to Sidebar
+            Panel logoPanel = new Panel { 
+                Dock = DockStyle.Top, 
+                Height = 100, 
+                Padding = new Padding(20, 30, 20, 0),
+                BackColor = Color.Transparent
+            };
+            Label lblLogo = new Label { 
+                Text = "HMS PRO", 
+                ForeColor = UITheme.BrandPrimary, 
+                Font = new Font("Segoe UI", 20, FontStyle.Bold), 
+                AutoSize = true, 
+                Location = new Point(20, 30) 
+            };
+            logoPanel.Controls.Add(lblLogo);
+            if (navPanel != null)
+            {
+                navPanel.Controls.Add(logoPanel);
+                logoPanel.BringToFront();
+                
+                // Style all buttons in navPanel
+                foreach (Control control in navPanel.Controls)
+                {
+                    if (control is Button navButton)
+                    {
+                        UIHelper.StyleNavButton(navButton, navButton.Name == "btnPatients");
+                    }
+                }
+            }
             
             if (userRole == "Patient")
             {
                 if (navPanel != null) navPanel.Visible = false;
-                if (this.Controls.Count > 0 && this.Controls[0] is TableLayoutPanel mainLayout)
-                {
-                    mainLayout.ColumnStyles[0] = new ColumnStyle(SizeType.Absolute, 0);
-                    mainLayout.SetColumnSpan(contentPanel, 2);
-                }
                 ShowPatientView();
-            }
-            
-            try
-            {
-                UIHelper.ApplyModernTheme(this);
-                
-                if (navPanel != null && navPanel.Visible)
-                {
-                    foreach (Control control in navPanel.Controls)
-                    {
-                        if (control is Button navButton && control != navBorder)
-                            UIHelper.StyleNavButton(navButton, false);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine("Theme application error: " + ex.Message);
             }
             
             AdjustNavigationVisibility(userRole);
@@ -137,7 +161,7 @@ namespace HMS
             Panel patientDetailsPanel = new Panel
             {
                 Dock = DockStyle.Fill,
-                BackColor = System.Drawing.Color.FromArgb(230, 245, 255), // Light blue background
+                BackColor = UITheme.BackgroundGray,
                 Padding = new Padding(15),
                 Margin = new Padding(5)
             };
@@ -222,7 +246,7 @@ namespace HMS
             Panel patientAppointmentsPanel = new Panel
             {
                 Dock = DockStyle.Fill,
-                BackColor = System.Drawing.Color.FromArgb(240, 240, 240), // Light gray background
+                BackColor = UITheme.BackgroundLight,
                 Padding = new Padding(15),
                 Margin = new Padding(5)
             };
@@ -275,73 +299,92 @@ namespace HMS
             // Set active state for clicked button
             UIHelper.StyleNavButton(clickedButton, true); // Set to active state
 
-            // Show corresponding control
+            // Show corresponding control resolved from DI
             switch (clickedButton.Text)
             {
-                case "Patients": ShowControl(new PatientControl()); break;
-                case "Doctors": ShowControl(new DoctorControl()); break;
-                case "Appointments": ShowControl(new AppointmentControl()); break;
-                case "Rooms": ShowControl(new RoomControl()); break;
-                case "Invoices": ShowControl(new InvoiceControl()); break;
-                case "Diseases": ShowControl(new DiseaseControl()); break;
-                case "Suppliers": ShowControl(new SupplierControl()); break;
-                case "Medicines": ShowControl(new MedicineControl()); break;
-                case "Billing": ShowControl(new BillingControl()); break;
+                case "Patients": ShowControl(_serviceProvider.GetRequiredService<PatientControl>()); break;
+                case "Doctors": ShowControl(_serviceProvider.GetRequiredService<DoctorControl>()); break;
+                case "Appointments": ShowControl(_serviceProvider.GetRequiredService<AppointmentControl>()); break;
+                case "Rooms": ShowControl(_serviceProvider.GetRequiredService<RoomControl>()); break;
+                case "Invoices": ShowControl(_serviceProvider.GetRequiredService<InvoiceControl>()); break;
+                case "Diseases": ShowControl(_serviceProvider.GetRequiredService<DiseaseControl>()); break;
+                case "Suppliers": ShowControl(_serviceProvider.GetRequiredService<SupplierControl>()); break;
+                case "Medicines": ShowControl(_serviceProvider.GetRequiredService<MedicineControl>()); break;
+                case "Billing": ShowControl(_serviceProvider.GetRequiredService<BillingControl>()); break;
             }
         }
 
         private async void ShowControl(UserControl control)
         {
+            if (control == null) return;
+
+            // Prevent re-entrant calls during animation
+            if (_isAnimating) return;
+            _isAnimating = true;
+
             try
             {
-                // Smooth transition: slide in from right
-                Control oldControl = null;
-                if (contentPanel.Controls.Count > 0)
-                {
-                    oldControl = contentPanel.Controls[0];
-                }
+                // Identify the current control
+                Control oldControl = contentPanel.Controls.Count > 0 ? contentPanel.Controls[0] : null;
 
-                // Add new control (hidden initially, positioned off-screen to the right)
-                control.Dock = DockStyle.None; // Temporarily disable dock for animation
-                control.Visible = false;
-                control.Location = new Point(contentPanel.Width, 0); // Start off-screen to the right
-                control.Size = contentPanel.Size;
+                if (oldControl == control) return;
+
+                // -- KEY FIX: Hide old control immediately so it doesn't show through --
+                if (oldControl != null)
+                    oldControl.Visible = false;
+
+                // Prepare new control off-screen to the right
+                control.Dock = DockStyle.None;
+                control.Size = contentPanel.ClientSize;
+                control.BackColor = Color.White;
+                UIHelper.SetDoubleBuffered(control);
+                control.Location = new Point(contentPanel.ClientSize.Width, 0);
+                control.Visible = true;
+
+                contentPanel.SuspendLayout();
                 contentPanel.Controls.Add(control);
                 control.BringToFront();
+                contentPanel.ResumeLayout(false);
 
-                // Slide in animation
-                int targetX = 0;
-                int startX = contentPanel.Width;
-                int steps = 15;
-                int stepSize = (startX - targetX) / steps;
-                int delay = 10; // milliseconds per step
+                // Animate: slide in with Cubic-Out easing (250ms)
+                int duration = 250;
+                var sw = System.Diagnostics.Stopwatch.StartNew();
 
-                for (int i = 0; i <= steps; i++)
+                while (true)
                 {
-                    control.Left = startX - (stepSize * i);
-                    control.Visible = true;
-                    await Task.Delay(delay);
-                    Application.DoEvents();
+                    long elapsed = sw.ElapsedMilliseconds;
+                    if (elapsed >= duration) break;
+
+                    double t = (double)elapsed / duration;
+                    double easedT = 1.0 - Math.Pow(1.0 - t, 3.0); // Cubic Out
+
+                    control.Left = (int)(contentPanel.ClientSize.Width * (1.0 - easedT));
+                    control.Update();
+
+                    await Task.Delay(8);
                 }
 
-                control.Left = targetX;
-                control.Dock = DockStyle.Fill; // Re-enable dock after animation
+                // Snap to final position and re-dock
+                control.Left = 0;
+                control.Dock = DockStyle.Fill;
 
-                // Remove old control after transition
+                // Remove and dispose old control
                 if (oldControl != null)
                 {
                     contentPanel.Controls.Remove(oldControl);
-                    oldControl.Dispose();
+                    if (!oldControl.IsDisposed) oldControl.Dispose();
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error showing control: " + ex.Message);
-                // Fallback to simple show
+                System.Diagnostics.Debug.WriteLine("Transition error: " + ex.Message);
                 contentPanel.Controls.Clear();
                 control.Dock = DockStyle.Fill;
                 contentPanel.Controls.Add(control);
-                control.BringToFront();
+            }
+            finally
+            {
+                _isAnimating = false;
             }
         }
 
@@ -356,13 +399,8 @@ namespace HMS
                 {
                     if (control is Button navButton)
                     {
-                        navButton.Visible = (navButton.Text == "Patients");
+                        navButton.Visible = (navButton.Text == "Patients" || navButton.Text == "Logout");
                     }
-                }
-                // You might want to automatically show the patient view here if not already shown
-                if (!(contentPanel.Controls.Count > 0 && contentPanel.Controls[0] is PatientControl))
-                {
-                    ShowPatientView();
                 }
             }
             else // Admin/Doctor/etc. roles - show all relevant navigation
@@ -373,11 +411,6 @@ namespace HMS
                     {
                         navButton.Visible = true; // Show all navigation buttons
                     }
-                }
-                // Set a default view for non-patient roles if desired
-                if (!(contentPanel.Controls.Count > 0 && contentPanel.Controls[0] is PatientControl || contentPanel.Controls[0] is DoctorControl || contentPanel.Controls[0] is AppointmentControl))
-                {
-                    ShowControl(new PatientControl()); // Default to patient management for admin
                 }
             }
         }

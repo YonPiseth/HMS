@@ -90,9 +90,9 @@ namespace HMS.Repositories
         }
 
         /// <summary>
-        /// Gets a patient with room information
+        /// Gets a patient with room information asynchronously
         /// </summary>
-        public Patient GetByIdWithRoom(int patientId)
+        public async Task<Patient> GetByIdWithRoomAsync(int patientId)
         {
             using (SqlConnection con = DatabaseHelper.GetConnection())
             {
@@ -102,10 +102,10 @@ namespace HMS.Repositories
                                WHERE p.PatientID = @PatientID AND p.IsDeleted = 0";
                 SqlCommand cmd = new SqlCommand(query, con);
                 cmd.Parameters.AddWithValue("@PatientID", patientId);
-                con.Open();
-                using (SqlDataReader reader = cmd.ExecuteReader())
+                await con.OpenAsync();
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
-                    if (reader.Read())
+                    if (await reader.ReadAsync())
                     {
                         var patient = MapDataReader(reader);
                         if (reader["RoomNumber"] != DBNull.Value)
@@ -120,17 +120,9 @@ namespace HMS.Repositories
         }
 
         /// <summary>
-        /// Sets the PatientID after insertion
+        /// Gets all patients with room information asynchronously
         /// </summary>
-        protected override void SetEntityId(Patient entity, int id)
-        {
-            entity.PatientID = id;
-        }
-
-        /// <summary>
-        /// Gets all patients with room information
-        /// </summary>
-        public List<Patient> GetAllWithRooms()
+        public async Task<List<Patient>> GetAllWithRoomsAsync()
         {
             List<Patient> patients = new List<Patient>();
             using (SqlConnection con = DatabaseHelper.GetConnection())
@@ -140,10 +132,10 @@ namespace HMS.Repositories
                                LEFT JOIN tblRoom r ON p.PatientID = r.PatientID
                                WHERE p.IsDeleted = 0";
                 SqlCommand cmd = new SqlCommand(query, con);
-                con.Open();
-                using (SqlDataReader reader = cmd.ExecuteReader())
+                await con.OpenAsync();
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                 {
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         var patient = MapDataReader(reader);
                         if (reader["RoomNumber"] != DBNull.Value)
@@ -155,6 +147,25 @@ namespace HMS.Repositories
                 }
             }
             return patients;
+        }
+
+        /// <summary>
+        /// Sets the PatientID after insertion
+        /// </summary>
+        protected override void SetEntityId(Patient entity, int id)
+        {
+            entity.PatientID = id;
+        }
+
+        public List<Patient> GetAllWithRooms()
+        {
+            // Implementation...
+            return GetAllWithRoomsAsync().GetAwaiter().GetResult();
+        }
+
+        public Patient GetByIdWithRoom(int id)
+        {
+            return GetByIdWithRoomAsync(id).GetAwaiter().GetResult();
         }
     }
 }
