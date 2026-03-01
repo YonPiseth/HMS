@@ -29,6 +29,7 @@ A comprehensive Windows Forms application developed in C# for managing hospital 
 - [Running the Application](#running-the-application)
 - [Default Login Credentials](#default-login-credentials)
 - [Project Structure](#project-structure)
+- [Design Architecture & Patterns](#design-architecture--patterns)
 - [Forms Description](#forms-description)
 - [Screenshots](#screenshots)
 - [Troubleshooting](#troubleshooting)
@@ -278,6 +279,26 @@ HMS/
 ├── HMS.sln                       # Solution file
 └── README.md                     # This file
 ```
+
+---
+
+## 🏗️ Design Architecture & Patterns
+
+The project follows a modern **N-Layer Architecture** (UI → Service → Repository → Database) and implements several **Gang of Four (GoF)** design patterns to ensure maintainability and scalability.
+
+### 🧩 Pattern Classification
+
+| Group | Applied Pattern | Implementation in HMS |
+| :--- | :--- | :--- |
+| **Creational** | **Factory Method** | `BaseEntityControl` defines `CreateEntityForm()`, which subclasses implement to create specific forms. |
+| | **Singleton** | `DatabaseHelper` provides a centralized point for connection management. |
+| | **Dependency Injection** | Used in `Program.cs` via `ServiceCollection` to manage object lifecycles and decoupling. |
+| **Structural** | **Facade / Proxy** | **Service Layer** (`DoctorService`, etc.) acts as a simplified interface between UI and Repositories. |
+| | **Repository** | `IRepository<T>` and `BaseRepository<T>` manage data access logic abstractions. |
+| **Behavioral** | **Template Method** | `BaseRepository` defines the skeleton of CRUD operations, allowing specific repositories to override SQL logic. |
+| | **Observer** | Built into WinForms event system (e.g., button clicks notifying the form). |
+
+For a detailed breakdown of these implementations, see [OOP_IMPLEMENTATION.md](./OOP_IMPLEMENTATION.md).
 
 ---
 

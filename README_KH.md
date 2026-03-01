@@ -29,6 +29,7 @@ Application Windows Forms ពេញលេញដែលបានបង្កើត
 - [ការដំណើរការ Application](#ការដំណើរការ-application)
 - [Default Login Credentials](#default-login-credentials)
 - [Project Structure](#project-structure)
+- [ស្ថាបត្យកម្មរចនា និង Patterns](#ស្ថាបត្យកម្មរចនា-និង-patterns)
 - [ការពន្យល់អំពី Forms](#ការពន្យល់អំពី-forms)
 - [Screenshots](#screenshots)
 - [Troubleshooting](#troubleshooting)
@@ -279,6 +280,26 @@ HMS/
 ├── HMS.sln                       # Solution file
 └── README.md                     # This file
 ```
+
+---
+
+## 🏗️ ស្ថាបត្យកម្មរចនា និង Patterns
+
+គម្រោងនេះអនុវត្តតាម **ស្ថាបត្យកម្ម N-Layer** បែបទំនើប (UI → Service → Repository → Database) និងប្រើប្រាស់ **Gang of Four (GoF)** design patterns ជាច្រើនដើម្បីធានាបាននូវភាពងាយស្រួលក្នុងការថែទាំ និងពង្រីក។
+
+### 🧩 ចំណាត់ថ្នាក់ Patterns
+
+| ក្រុម (Group) | Pattern ដែលប្រើ | ការអនុវត្តក្នុង HMS |
+| :--- | :--- | :--- |
+| **Creational** | **Factory Method** | `BaseEntityControl` កំណត់ `CreateEntityForm()` ដែល subclasses អនុវត្តដើម្បីបង្កើត form ជាក់លាក់។ |
+| | **Singleton** | `DatabaseHelper` ផ្តល់នូវចំណុចកណ្តាលសម្រាប់គ្រប់គ្រង connection។ |
+| | **Dependency Injection** | ប្រើក្នុង `Program.cs` តាមរយៈ `ServiceCollection` ដើម្បីគ្រប់គ្រង object lifecycles។ |
+| **Structural** | **Facade / Proxy** | **Service Layer** (`DoctorService`, ល។) ដើរតួជា interface សាមញ្ញរវាង UI និង Repositories។ |
+| | **Repository** | `IRepository<T>` និង `BaseRepository<T>` គ្រប់គ្រង abstraction នៃ logic សម្រាប់ការចូលប្រើ data។ |
+| **Behavioral** | **Template Method** | `BaseRepository` កំណត់គ្រោងឆ្អឹងនៃ CRUD operations ដែលអនុញ្ញាតឱ្យ repositories ជាក់លាក់ប្តូរ SQL logic បាន។ |
+| | **Observer** | មានស្រាប់ក្នុង WinForms event system (ឧទាហរណ៍៖ ការចុចប៊ូតុងដែលជូនដំណឹងដល់ form)។ |
+
+សម្រាប់ការវិភាគលម្អិតអំពីការអនុវត្តទាំងនេះ សូមមើល [OOP_IMPLEMENTATION.md](./OOP_IMPLEMENTATION.md)។
 
 ---
 
